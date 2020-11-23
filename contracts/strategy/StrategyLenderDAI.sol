@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IStrategy.sol";
-import "../../interfaces/IDforce.sol";
+import "../interfaces/IDforce.sol";
 //import "../interfaces/IController.sol";
 
 contract StrategyLenderDAI is IStrategy {
@@ -13,14 +13,14 @@ contract StrategyLenderDAI is IStrategy {
     using Address for address;
     using SafeMath for uint256;
 
-    address constant public want = address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48); // USDC
     address constant public dusdc = address(0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179);
-
+    address public want;
     address public governance;
     address public controller;
     address public strategist;
 
-    constructor(address _controller) public {
+    constructor(address _controller,address _want) public {
+        want = address (_want);
         governance = msg.sender;
         strategist = msg.sender;
         controller = _controller;

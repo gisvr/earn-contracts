@@ -27,8 +27,12 @@ describe("mVault", function () {
         this.mockERC2 = await MockERC20.new("MC 2 name", "MC", this.value, 18, {from: minter});
 
         this.mController = await mController.new(bob);
-        this.Strategy = await Strategy.new(this.mController.address);
-        this.Strategy2 = await Strategy.new(this.mController.address);
+        this.Strategy = await Strategy.new(this.mController.address,this.mockERC20.address);
+        this.Strategy2 = await Strategy.new(this.mController.address,this.mockERC20.address);
+
+        let want =
+
+        // console.log(this.mController.address)
 
         this.mVault = await mVault.new(this.mockERC20.address, this.mController.address);
     });
@@ -50,6 +54,7 @@ describe("mVault", function () {
             //??? 这个 approver 是个true fales 的对象
             await this.mController.approveStrategy(this.mockERC20.address, this.Strategy.address)
             await this.mController.setStrategy(this.mockERC20.address, this.Strategy.address)
+
             let addr = await this.mController.strategies(this.mockERC20.address)
             expect(addr).to.equal(this.Strategy.address);
 
@@ -69,6 +74,8 @@ describe("mVault", function () {
         });
 
         it("should have correct earn", async () => {
+            let controller = await this.mVault.controller()
+            console.log("controller ", controller);
             //清空
             await this.mVault.earn()
 

@@ -4,7 +4,7 @@
 
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.0;
 
 interface dRewards {
     function withdraw(uint) external;

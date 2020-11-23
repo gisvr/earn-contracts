@@ -13,12 +13,13 @@ contract Strategy is IStrategy {
     using Address for address;
     using SafeMath for uint256;
 
-    address constant  public want = address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48); // USDC
+    address public want ; // USDC
     address public governance;
     address public controller;
     address public strategist;
 
-    constructor(address _controller) public {
+    constructor(address _controller, address _want) public {
+        want = address(_want);
         governance = msg.sender;
         strategist = msg.sender;
         controller = _controller;

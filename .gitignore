@@ -1,0 +1,9 @@
+build/*
+*artifacts*
+node_modules/
+.idea/
+package-lock.json
+yarn.lock
+.openzeppelin/project.json
+.vscode/settings.json
+contracts/.gitkeep

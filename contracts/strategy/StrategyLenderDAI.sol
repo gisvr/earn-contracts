@@ -5,10 +5,12 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IStrategy.sol";
+import "../interfaces/ILenderProvider.sol";
+
 import "../interfaces/IDforce.sol";
 //import "../interfaces/IController.sol";
 
-contract StrategyLenderDAI is IStrategy {
+contract StrategyLenderDAI is IStrategy,ILenderProvider {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
@@ -19,28 +21,40 @@ contract StrategyLenderDAI is IStrategy {
     address public controller;
     address public strategist;
 
-    constructor(address _controller,address _want) public {
-        want = address (_want);
+    constructor (address _controller, address _want) public {
+        want = address(_want);
         governance = msg.sender;
         strategist = msg.sender;
         controller = _controller;
     }
+    function recommend() override(ILenderProvider) public{
+        
+    }
+
+    // function recommend() override(ILenderProvider) public view returns (LenderInfo memory) {
+    //     // LenderInfo lender =;
+    //     return  LenderInfo({lenderTokenAddr:0x6B175474E89094C44Da98b954EedeAC495271d0F,apr:1});
+    // }
 
 
     function deposit() override(IStrategy) external {
         uint _want = IERC20(want).balanceOf(address(this));
-//        if (_want > 0) {
-//            IERC20(want).safeApprove(dusdc, 0);
-//            IERC20(want).safeApprove(dusdc, _want);
-//            dERC20(dusdc).mint(address(this), _want);
-//        }
-//
-//        uint _dusdc = IERC20(dusdc).balanceOf(address(this));
-//        if (_dusdc > 0) {
-//            IERC20(dusdc).safeApprove(pool, 0);
-//            IERC20(dusdc).safeApprove(pool, _dusdc);
-//            dRewards(pool).stake(_dusdc);
-//        }
+        //        if (_want > 0) {
+        //            IERC20(want).safeApprove(dusdc, 0);
+        //            IERC20(want).safeApprove(dusdc, _want);
+        //            dERC20(dusdc).mint(address(this), _want);
+        //        }
+        //
+        //        uint _dusdc = IERC20(dusdc).balanceOf(address(this));
+        //        if (_dusdc > 0) {
+        //            IERC20(dusdc).safeApprove(pool, 0);
+        //            IERC20(dusdc).safeApprove(pool, _dusdc);
+        //            dRewards(pool).stake(_dusdc);
+        //        }
+    }
+
+    function harvest() override(IStrategy) external {
+
     }
 
     function withdraw(address) override(IStrategy) external {

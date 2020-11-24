@@ -65,3 +65,4 @@ contract mUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
     function set_new_APR(address _new_APR) public onlyOwner {
         apr = _new_APR;
     }
+}

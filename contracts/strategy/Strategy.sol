@@ -29,6 +29,10 @@ contract Strategy is IStrategy {
 
     }
 
+    function harvest() override(IStrategy) external {
+
+    }
+
     function withdraw(address) override(IStrategy) external {
 
     }

@@ -51,4 +51,12 @@ contract CompoundAPR is Ownable,IAPR {
             c.reserveFactorMantissa()
         ).mul(blocksPerYear);
     }
+
+    // function supply(address cToken,uint amount) public {
+    //     require(ICToken(cToken).mint(amount) == 0, "COMPOUND: supply failed");
+    // }
+
+    // function balance(address cToken,address user) public view returns (uint256) {
+    //     return IERC20(cToken).balanceOf(address(user));
+    // }
 }

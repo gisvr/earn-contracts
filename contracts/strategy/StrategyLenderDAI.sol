@@ -10,7 +10,7 @@ import "../interfaces/ILenderProvider.sol";
 import "../interfaces/IDforce.sol";
 //import "../interfaces/IController.sol";
 
-contract StrategyLenderDAI is IStrategy,ILenderProvider {
+contract StrategyLenderDAI is IStrategy {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
@@ -27,14 +27,17 @@ contract StrategyLenderDAI is IStrategy,ILenderProvider {
         strategist = msg.sender;
         controller = _controller;
     }
-    function recommend() override(ILenderProvider) public{
-        
-    }
+    
 
     // function recommend() override(ILenderProvider) public view returns (LenderInfo memory) {
     //     // LenderInfo lender =;
     //     return  LenderInfo({lenderTokenAddr:0x6B175474E89094C44Da98b954EedeAC495271d0F,apr:1});
     // }
+
+    function approveToken() public {
+        // IERC20(address(this)).safeApprove(compound, uint(- 1)); 
+        // IERC20(address(this)).safeApprove(getAaveCore(), uint(- 1)); 
+    }
 
 
     function deposit() override(IStrategy) external {

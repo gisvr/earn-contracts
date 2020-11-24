@@ -9,27 +9,29 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/EnumerableMap.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-contract APRWithPoolOracle is Ownable {
+import "../../interfaces/ILenderProvider.sol";
+
+contract LenderProvider is Ownable,ILenderProvider {
     using SafeMath for uint256;
-    using Address for address;
+    using Address for address; 
+    using EnumerableMap for EnumerableMap.UintToAddressMap;
 
-    uint256 DECIMAL = 10 ** 18;
+    LenderInfo[]  reservesList; 
 
-    uint256 public liquidationRatio;
-    uint256 public dydxModifier;
-    uint256 public blocksPerYear = 2102400; // 1年的秒数/ 15秒出块 = 31536000/15
-
-    function getAPR(address token) public view returns (uint256) {
-        require(token!=address(0));
-
-        return 1;
-     }
-
-    function getAPRAdjusted(address token, uint256 _supply) public view returns (uint256) {
-        
-        return 1;
+    function recommend(address token) public override(ILenderProvider)   returns (LenderInfo memory) {
+        require(token!=address(0)); 
+        return LenderInfo({lenderTokenAddr:0x6B175474E89094C44Da98b954EedeAC495271d0F,apr:1});
     }
+
+    
+     
+    function recommendAll(address token) public override(ILenderProvider)   returns (LenderInfo[]  memory) {
+        reservesList.push( LenderInfo({lenderTokenAddr:token,apr:1})); 
+        return  reservesList;
+    }
+ 
 
     // incase of half-way error
     function inCaseTokenGetsStuck(IERC20 _TokenAddress) onlyOwner public {

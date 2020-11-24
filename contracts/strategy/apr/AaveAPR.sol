@@ -10,9 +10,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol"; 
 import "./interfaces/IAave.sol";
+import "./interfaces/IAPR.sol";
 
 
-contract AaveAPR  is Ownable {
+contract AaveAPR  is Ownable,IAPR {
     using SafeMath for uint256;
     using Address for address;
     address public AAVE; 
@@ -33,14 +34,14 @@ contract AaveAPR  is Ownable {
     /*
         get APR
     */ 
-    function getAPR(address token) public view returns (uint256) {
+    function getAPR(address token) public override view returns (uint256) {
         address AaveCore = getAaveCore();
         ILendingPoolCore core = ILendingPoolCore(AaveCore);
         // 资产当前的流动性比率， 统一单位 到 e18 aave的单位是e27
         return core.getReserveCurrentLiquidityRate(token).div(1e9);
     }
 
-    function getAPRAdjusted(address token, uint256 _supply) public view returns (uint256) {
+    function getAPRAdjusted(address token, uint256 _supply) public override view returns (uint256) {
         address AaveCore = getAaveCore();
         ILendingPoolCore core = ILendingPoolCore(AaveCore);
         //获得资产的利率策略

@@ -6,12 +6,12 @@ import "./MockERC20.sol";
 
 import "../strategy/apr/interfaces/ICompound.sol"; 
 
-contract CToken is MockERC20, ICToken {
+contract CToken is  MockERC20,ICToken {
     address public modelAddress; 
     address token;
 
     constructor (string memory name, string memory symbol, uint256 initialSupply, uint8 decimals) 
-     public MockERC20( name, symbol, initialSupply, decimals) {
+      MockERC20( name, symbol, initialSupply, decimals) public {
          
     }
     

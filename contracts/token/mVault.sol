@@ -13,12 +13,10 @@ https://etherscan.io/address/0x597ad1e0c13bfe8025993d9e79c69e1c0233522e#code
 
 pragma solidity ^0.6.0;
 
-
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-//import "./ERC20.sol";
 import "../interfaces/IController.sol";
 
 contract mVault is ERC20 {
@@ -34,6 +32,8 @@ contract mVault is ERC20 {
     address public governance;
     address public controller;
 
+    // 根据支持的资产信息创建 vault, 
+    // 定义 contraller 通过 controller 操作strategy
     constructor (address _token, address _controller) public ERC20(
         string(abi.encodePacked("mEarn ", ERC20(_token).name())),
         string(abi.encodePacked("m", ERC20(_token).symbol()))
@@ -71,16 +71,21 @@ contract mVault is ERC20 {
     }
 
     // 发车
+    // 1.将Vault可用的token资产转移到 controller
+    // 2.通过contorller 操作 strategy。 earn token
+    // 3. vault的 balance 为 0 可以进程充值
     function earn() public {
         uint _bal = available();
         token.safeTransfer(controller, _bal);
         IController(controller).earn(address(token), _bal);
     }
 
+    // 1 将 vault 支持的token资产 充值到 vault
+    // 2 按照充值给用户分配 share
     function deposit(uint _amount) external {
         uint _pool = balance();
         // _pool == 0 异常 必须将 pool 清空
-//        require(_pool == 0, "!_pool = 0");
+        // require(_pool == 0, "!_pool = 0");
         token.safeTransferFrom(msg.sender, address(this), _amount);
         uint shares = 0;
         if (_pool == 0) {
@@ -89,7 +94,7 @@ contract mVault is ERC20 {
             shares = (_amount.mul(totalSupply())).div(_pool);//
         }
         _mint(msg.sender, shares);
-//        earn();
+        //  earn();
     }
 
     // No rebalance implementation for lower fees and faster swaps

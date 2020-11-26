@@ -10,6 +10,7 @@ import "../interfaces/ILenderProvider.sol";
 import "../interfaces/IDforce.sol"; 
 import "../interfaces/IController.sol";
 import "./lender/interfaces/ICompound.sol";
+import "./lender/interfaces/IAave.sol";
 
 contract StrategyLender is IStrategy {
     using SafeERC20 for IERC20;
@@ -20,6 +21,7 @@ contract StrategyLender is IStrategy {
     address public governance;
     address public controller;
     address public strategist;
+    address public recommend = 0x540d7E428D5207B30EE03F2551Cbb5751D3c7569;
 
     constructor (address _controller, address _want) public {
         want = address(_want);
@@ -41,46 +43,50 @@ contract StrategyLender is IStrategy {
         // IERC20(address(this)).safeApprove(compound, uint(- 1)); 
         // IERC20(address(this)).safeApprove(getAaveCore(), uint(- 1)); 
     }
+    
+    function deposit() override(IStrategy) public { 
+        
+        uint _balance = IERC20(want).balanceOf(address(this));
+ 
+        if(_balance>0){
+            //接受资产的合约地址
+            address _lpAddres = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+            //拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度
+            IERC20(want).safeIncreaseAllowance(_lpAddres, _balance);
+             // 将合约的ERC20资产转入 LP 中，获得LP资产
+            supplyCompound(want,_balance);
+        }
+       
 
-
-    function deposit() override(IStrategy) public {
-
-        address _opAddres = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-        uint _want = IERC20(want).balanceOf(address(this));
-        //拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度
-        IERC20(want).safeIncreaseAllowance(_opAddres, _want);
-        // 将合约的ERC20资产转入 LP 中，获得LP资产
-        supplyCompound(want,_want);
-
-        // if (_want > 0) {
-        //            IERC20(want).safeApprove(dusdc, 0);
-        //            IERC20(want).safeApprove(dusdc, _want);
-        //            dERC20(dusdc).mint(address(this), _want);
-        //        }
-        //
-        //        uint _dusdc = IERC20(dusdc).balanceOf(address(this));
-        //        if (_dusdc > 0) {
-        //            IERC20(dusdc).safeApprove(pool, 0);
-        //            IERC20(dusdc).safeApprove(pool, _dusdc);
-        //            dRewards(pool).stake(_dusdc);
-        //        }
+       
+            // if (newProvider == Lender.DYDX) { 
+            //     supplyCompound(balance());
+            // } else if (newProvider == Lender.AAVE) {
+            //     supplyAave(balance());
+            // } 
     }
 
-    function supplyAave(address token,uint256 amount) public {
-        // Aave(getAave()).deposit(token, amount, 0);
+    function supplyAave(address token,uint256 amount) public returns(address ) {
+        //
+        bytes memory _func = abi.encode(bytes4(keccak256("owner()")));
+        (bool success,bytes memory _lendpool) =  address(recommend).call{value:0}(_func); 
+        require(success);  
+        (address addr) = abi.decode(_lendpool,(address));
+        IAave(addr).deposit(token, amount, 0);
+        return  addr;
     }
 
     function supplyCompound(address token,uint256 amount) public {
-        require(ICToken(token).mint(amount) == 0, "COMPOUND: supply failed");
+        require(ICompound(token).mint(amount) == 0, "COMPOUND: supply failed");
     }
 
     function redeemCompound(address token,uint256 amount) public {
-        require(ICToken(token).redeem(amount) == 0, "COMPOUND: supply failed");
+        require(ICompound(token).redeem(amount) == 0, "COMPOUND: supply failed");
     }
 
-     function balanceCompound(address token,uint256 amount) public {
-        require(ICToken(token).mint(amount) == 0, "COMPOUND: supply failed");
-    }
+    //  function balanceCompound(address token) public returns (uint256 amount) {
+    //      ICompound(token).balanceOf(amount) == 0, "COMPOUND: supply failed");
+    // }
 
  
 

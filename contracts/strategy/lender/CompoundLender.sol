@@ -21,16 +21,16 @@ contract CompoundLender is Ownable {
  
 
     function supply(address token,uint256 amount) public   {
-           require(ICToken(token).mint(amount) == 0, "COMPOUND: supply failed");
+           require(ICompound(token).mint(amount) == 0, "COMPOUND: supply failed");
     }
  
     function balance(address token) public returns (uint256)    {
-        uint amount = ICToken(token).balanceOf(msg.sender);
+        uint amount = ICompound(token).balanceOf(msg.sender);
         return amount;
     }
 
     function redeem(address token,uint256 amount) public {
-         require(ICToken(token).redeem(amount) == 0, "COMPOUND: withdraw failed");
+         require(ICompound(token).redeem(amount) == 0, "COMPOUND: withdraw failed");
     }
  
 

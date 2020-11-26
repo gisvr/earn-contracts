@@ -16,7 +16,8 @@ import "./interfaces/IAPR.sol";
 contract AaveAPR  is Ownable,IAPR {
     using SafeMath for uint256;
     using Address for address;
-    address public AAVE; 
+    address  AAVE; 
+    string  lenderName = "Aave";
 
     // 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8 mainnet
     constructor(address _addressesProvider) public {
@@ -27,16 +28,31 @@ contract AaveAPR  is Ownable,IAPR {
         return address(ILendingPoolAddressesProvider(AAVE).getLendingPoolCore());
     }
 
+    function getAave()  view  public returns (address) {
+        return address(ILendingPoolAddressesProvider(AAVE).getLendingPool());
+    }
+
     function initialize(address _addressesProvider) public onlyOwner {
         AAVE = _addressesProvider; 
+    }
+
+    function name() public override view returns (string memory){
+        return lenderName;
+    }
+
+    function getLpToken(address token) public override view returns (address){
+        address aave = getAave();
+        ILendingPool lendPool = ILendingPool(aave);
+        (,,,,,,,,,,,address aTokenAddress,) = lendPool.getReserveData(token);
+        return aTokenAddress; 
     }
 
     /*
         get APR
     */ 
     function getAPR(address token) public override view returns (uint256) {
-        address AaveCore = getAaveCore();
-        ILendingPoolCore core = ILendingPoolCore(AaveCore);
+        address aaveCore = getAaveCore();
+        ILendingPoolCore core = ILendingPoolCore(aaveCore);
         // 资产当前的流动性比率， 统一单位 到 e18 aave的单位是e27
         return core.getReserveCurrentLiquidityRate(token).div(1e9);
     }

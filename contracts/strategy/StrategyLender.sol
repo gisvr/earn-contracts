@@ -7,15 +7,15 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IStrategy.sol";
 import "../interfaces/ILenderProvider.sol";
 
-import "../interfaces/IDforce.sol";
-//import "../interfaces/IController.sol";
+import "../interfaces/IDforce.sol"; 
+import "../interfaces/IController.sol";
+import "./lender/interfaces/ICompound.sol";
 
-contract StrategyLenderDAI is IStrategy {
+contract StrategyLender is IStrategy {
     using SafeERC20 for IERC20;
     using Address for address;
-    using SafeMath for uint256;
+    using SafeMath for uint256; 
 
-    address constant public dusdc = address(0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179);
     address public want;
     address public governance;
     address public controller;
@@ -28,6 +28,9 @@ contract StrategyLenderDAI is IStrategy {
         controller = _controller;
     }
     
+    // function reserve() public view returns (address) {
+    //     return IController(controller).want(address(this));
+    // }
 
     // function recommend() override(ILenderProvider) public view returns (LenderInfo memory) {
     //     // LenderInfo lender =;
@@ -40,9 +43,16 @@ contract StrategyLenderDAI is IStrategy {
     }
 
 
-    function deposit() override(IStrategy) external {
+    function deposit() override(IStrategy) public {
+
+        address _opAddres = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
         uint _want = IERC20(want).balanceOf(address(this));
-        //        if (_want > 0) {
+        //拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度
+        IERC20(want).safeIncreaseAllowance(_opAddres, _want);
+        // 将合约的ERC20资产转入 LP 中，获得LP资产
+        supplyCompound(want,_want);
+
+        // if (_want > 0) {
         //            IERC20(want).safeApprove(dusdc, 0);
         //            IERC20(want).safeApprove(dusdc, _want);
         //            dERC20(dusdc).mint(address(this), _want);
@@ -55,6 +65,25 @@ contract StrategyLenderDAI is IStrategy {
         //            dRewards(pool).stake(_dusdc);
         //        }
     }
+
+    function supplyAave(address token,uint256 amount) public {
+        // Aave(getAave()).deposit(token, amount, 0);
+    }
+
+    function supplyCompound(address token,uint256 amount) public {
+        require(ICToken(token).mint(amount) == 0, "COMPOUND: supply failed");
+    }
+
+    function redeemCompound(address token,uint256 amount) public {
+        require(ICToken(token).redeem(amount) == 0, "COMPOUND: supply failed");
+    }
+
+     function balanceCompound(address token,uint256 amount) public {
+        require(ICToken(token).mint(amount) == 0, "COMPOUND: supply failed");
+    }
+
+ 
+
 
     function harvest() override(IStrategy) external {
 
@@ -75,4 +104,5 @@ contract StrategyLenderDAI is IStrategy {
     function balanceOf() override(IStrategy) external view returns (uint){
         return uint(0);
     }
+ 
 }

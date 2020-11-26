@@ -10,6 +10,7 @@ const {expect} = require("chai");
 
 const CToken = contract.fromArtifact("CToken"); // Loads a compiled contract
 const InterestRateModel = contract.fromArtifact("InterestRateModel"); 
+
 const CompoundAPR = contract.fromArtifact("CompoundAPR");
  
 

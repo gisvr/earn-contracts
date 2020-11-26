@@ -6,9 +6,20 @@ import "../strategy/apr/interfaces/IAPR.sol";
 
 contract MockAPR is IAPR { 
     string public lenderName;
-    constructor(string memory _name) public{
+    address public core;
+    constructor(string memory _name,address _core) public{
         lenderName = _name;
+        core= _core;
     }
+
+     function getAaveCore() public view returns (address) {
+        return core;
+    }
+
+    function getAave()  view  public returns (address) {
+        return core;
+    }
+
 
     function name() public  view override returns (string memory){
         return lenderName;

@@ -35,13 +35,13 @@ describe("Lender  APR", function () {
         expect(await this.AaveAPR.getAaveCore()).to.equal(lpCore.address);
 
         this.lenderAPR = await LenderAPR.new()  
-        await this.lenderAPR.addLender(name,this.AaveAPR.address); 
+        await this.lenderAPR.addLender("AAVE",this.AaveAPR.address); 
 
     });
 
     it("recommend ARP ", async () => {  
         let name = await this.AaveAPR.name() 
-       console.log("name",name)
+         console.log("name",name)
  
         let recommend = await this.lenderAPR.recommend(bob)
         console.log(recommend) 

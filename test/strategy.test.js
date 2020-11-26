@@ -8,42 +8,47 @@ const {
 
 const {expect} = require("chai");
 
-const LendingPoolAddressesProvider = contract.fromArtifact("LendingPoolAddressesProvider"); // Loads a compiled contract
-const LendingPoolCore = contract.fromArtifact("LendingPoolCore");
-const ReserveInterestRateStrategy = contract.fromArtifact("ReserveInterestRateStrategy");
-const AaveAPR = contract.fromArtifact("AaveAPR");
+// Mocker 
+const MockERC20 = contract.fromArtifact("MockERC20");
+const mController = contract.fromArtifact("mController");
+
+
+
+// Lender APR
+const AaveAPR = contract.fromArtifact("MockAPR");
+
+// Recmmand APR
+const LenderAPR = contract.fromArtifact("LenderAPR");
+
+// 
+const StrategyLender = contract.fromArtifact("StrategyLender");
  
 
-describe("Strategy AaveAPR", function () {
+describe("Strategy  Lender", function () {
     const [alice, bob, carol, minter] = accounts;
     beforeEach(async () => {
-        // this.value = new BN(60000000);
+        this.value = new BN(60000000);
+         
+        this.mockWant = await MockERC20.new("MC name", "MC", this.value, 18, {from: minter});  
+        this.AaveAPR = await AaveAPR.new("AAVE",this.mockWant.address);   
+        // --------apr-----
+        this.lenderAPR = await LenderAPR.new()  
+        await this.lenderAPR.addLender("AAVE",this.AaveAPR.address); 
 
-        let lpProvider = await LendingPoolAddressesProvider.new();
+        //----------straetgy-----
+      
+        this.mController = await mController.new(bob);
 
-        let lpCore = await LendingPoolCore.new();
+        this.StrategyLender = await StrategyLender.new(this.mController.address,this.mockWant.address,this.lenderAPR.address);
+    });
+
+    it("StrategyLender  deposit ", async () => {  
         
-        await lpProvider.setLendingPoolCore(lpCore.address)
+        await this.mockWant.transfer(this.StrategyLender.address, '10000', {from: minter});
 
-        let lpStrategy = await ReserveInterestRateStrategy.new();
-        await lpCore.setReserveInterestRateStrategyAddress(lpStrategy.address)
+        let recommendAll = await this.StrategyLender.deposit()
+        console.log(recommendAll)
 
-        this.AaveAPR = await AaveAPR.new(lpProvider.address); 
-
-       
-        expect(await this.AaveAPR.getAaveCore()).to.equal(lpCore.address);
- 
     });
-
-    it("ARP and Arp Adjusted", async () => { 
-       let arp = await this.AaveAPR.getAPR(alice)
-       console.log("ARP",arp.toString())
-       let arpAdjusted = await this.AaveAPR.getAPRAdjusted(alice,1) 
-       console.log("arpAdjusted",arpAdjusted.toString())
-    });
- 
-
-
+  
 });
-
-

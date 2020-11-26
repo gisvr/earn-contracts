@@ -3,32 +3,50 @@
  https://etherscan.io/address/0xeC3aDd301dcAC0e9B0B880FCf6F92BDfdc002BBc#code
 */
 
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/EnumerableMap.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol"; 
 import "../../interfaces/ILenderAPR.sol";
+import "./interfaces/IAPR.sol";
 
 contract LenderAPR is Ownable,ILenderAPR {
     using SafeMath for uint256;
-    using Address for address; 
-    using EnumerableMap for EnumerableMap.UintToAddressMap;
+    using Address for address;  
 
-    LenderInfo[]  reservesList; 
+    Lender[]  lenders; 
 
-    function recommend(address token) public override returns (LenderInfo memory) {
-        require(token!=address(0)); 
-        return LenderInfo({lenderTokenAddr:0x6B175474E89094C44Da98b954EedeAC495271d0F,apr:1});
+    function recommend(address token) public  override view  returns (Lender memory) { 
+        uint256  _max = 0;
+        uint256 _index = 0; 
+        for(uint i = 0; i < lenders.length; i++) { 
+           uint256 _apr =IAPR(lenders[i].lender).getAPR(token);
+           if(_max<_apr){
+               _max = _apr;
+               _index = i;
+           }
+        }
+        return  lenders[_index];
+    }
+ 
+    function recommendAll(address token) public override view returns (Lender[]  memory) { 
+        Lender[] memory  _lenders = lenders; 
+        for(uint i = 0; i < _lenders.length; i++) { 
+            _lenders[i].apr =IAPR(_lenders[i].lender).getAPR(token);
+        }
+        return  _lenders;
     }
 
+    function addLender(string memory name, address lenderApr) public onlyOwner  {  
+        lenders.push( Lender({name:name,lender:lenderApr,apr:1}));  
+    }
     
-     
-    function recommendAll(address token) public override returns (LenderInfo[]  memory) {
-        reservesList.push( LenderInfo({lenderTokenAddr:token,apr:1})); 
-        return  reservesList;
+    function removeLender(uint8 index) public onlyOwner  {  
+      if (index >= lenders.length) return;
+    //   delete lenders[index];
+      lenders[index] = lenders[lenders.length-1]; 
     }
 }

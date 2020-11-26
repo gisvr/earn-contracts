@@ -2,11 +2,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 interface ILendingPoolAddressesProvider {
-    // function getLendingPool() external view returns (address);
+    function getLendingPool() external view returns (address);
     function getLendingPoolCore() external view returns (address);
 }
  
 ///------------oracle------------
+
+interface ILendingPool {
+    // 获取资产当前的流动比例
+    function getReserveData(address _reserve)
+    external
+    view
+    returns (
+        uint256 totalLiquidity,
+        uint256 availableLiquidity,
+        uint256 totalBorrowsStable,
+        uint256 totalBorrowsVariable,
+        uint256 liquidityRate,
+        uint256 variableBorrowRate,
+        uint256 stableBorrowRate,
+        uint256 averageStableBorrowRate,
+        uint256 utilizationRate,
+        uint256 liquidityIndex,
+        uint256 variableBorrowIndex,
+        address aTokenAddress,
+        uint40 lastUpdateTimestamp
+    );
+}
+
 interface ILendingPoolCore {
     // 获取资产当前的流动比例
     function getReserveCurrentLiquidityRate(address _reserve)

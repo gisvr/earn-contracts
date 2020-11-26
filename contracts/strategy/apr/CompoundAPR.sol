@@ -6,12 +6,22 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/ICompound.sol";
 import "./interfaces/IAPR.sol";
 contract CompoundAPR is Ownable,IAPR {
     using SafeMath for uint256;
     using Address for address; 
     uint256 public blocksPerYear = 2102400; // 1年的秒数/ 15秒出块 = 31536000/15
+    string public lenderName = "Compound";
+
+    function name() public override view returns (string memory){
+        return lenderName;
+    }
+
+    function getLpToken(address token) public  override view returns (address){
+        return token; 
+    }
 
     /*
         get APR

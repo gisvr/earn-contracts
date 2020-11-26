@@ -29,9 +29,7 @@ describe("mVault", function () {
         this.mController = await mController.new(bob);
         this.Strategy = await Strategy.new(this.mController.address,this.mockERC20.address);
         this.Strategy2 = await Strategy.new(this.mController.address,this.mockERC20.address);
-
-        let want =
-
+ 
         // console.log(this.mController.address)
 
         this.mVault = await mVault.new(this.mockERC20.address, this.mController.address);

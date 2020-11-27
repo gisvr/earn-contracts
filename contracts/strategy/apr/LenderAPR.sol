@@ -20,6 +20,7 @@ contract LenderAPR is Ownable,ILenderAPR {
     Lender[]  lenders; 
 
     function recommend(address token) public  override view  returns (Lender memory) { 
+        Lender[] memory  _lenders = lenders; 
         uint256  _max = 0;
         uint256 _index = 0; 
         for(uint i = 0; i < lenders.length; i++) { 
@@ -29,7 +30,8 @@ contract LenderAPR is Ownable,ILenderAPR {
                _index = i;
            }
         }
-        return  lenders[_index];
+        _lenders[_index].apr =_max;
+        return  _lenders[_index];
     }
  
     function recommendAll(address token) public override view returns (Lender[]  memory) { 

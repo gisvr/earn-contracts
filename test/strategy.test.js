@@ -24,6 +24,15 @@ const LenderAPR = contract.fromArtifact("LenderAPR");
 const StrategyLender = contract.fromArtifact("StrategyLender");
  
 
+//ropsten 
+// aave arp =  0x71D7D6E70435229014e02CFE63a7a8E34BbF2d0c
+// dai = 0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108
+
+// comp arp =  0x3B0B789D92D7Ff6B74580F566a48b98DD043Cf2D
+// dai = 0x0d9c8723b343a8368bebe0b5e89273ff8d712e3c
+
+// lenderAPR = 0x3544e9b8B0f9Ce4dD01B2C89700BdC9FE22e09aa
+
 describe("Strategy  Lender", function () {
     const [alice, bob, carol, minter] = accounts;
     beforeEach(async () => {

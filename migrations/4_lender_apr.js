@@ -11,8 +11,10 @@ const LenderAPR = artifacts.require("LenderAPR");
 
 module.exports = async (deployer, network, accounts) => {
     await deployer.deploy(LenderAPR);
-    let aaveAPR = await AaveAPR.deployed()
-    let lenderAPR = await LenderAPR.deployed()
+    let aaveAPR = await AaveAPR.deployed();
+    let compoundAPR = await CompoundAPR.deployed();
+    let lenderAPR = await LenderAPR.deployed();
+
 
     let reserveDAI
     if (network == "ropsten") {
@@ -20,7 +22,8 @@ module.exports = async (deployer, network, accounts) => {
     }
 
     let aaveAddr = aaveAPR.address  
-    await lenderAPR.addLender("AAVE", aaveAddr.address);
+    await lenderAPR.addLender("Aave", aaveAddr.address);
+    await lenderAPR.addLender("Compound", compoundAPR.address);
 
     let foo1 = await lenderAPR.recommend(reserveDAI)
     console.log("lenderAPR",lenderAPR.address, foo1)

@@ -11,8 +11,9 @@ const AaveAPR = artifacts.require("AaveAPR");
 module.exports = async (deployer, network, accounts) => { 
     let [ower, devAddr] = accounts
     let aaveProvider =""
+    // https://docs.aave.com/developers/deployed-contracts/deployed-contract-instances
     if (network == "ropsten") {
-        aavePrivder = "0x9F7A946d935c8Efc7A8329C0d894A69bA241345A"
+        aavePrivder = "0x1c8756FD2B28e9426CDBDcC7E3c4d64fa9A54728"
     }
     await deployer.deploy(AaveAPR,[aaveProvider]);
 };

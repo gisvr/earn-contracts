@@ -14,13 +14,61 @@ contract CompoundAPR is Ownable,IAPR {
     using Address for address; 
     uint256 public blocksPerYear = 2102400; // 1年的秒数/ 15秒出块 = 31536000/15
     string public lenderName = "Compound";
+    address  Compound; 
+    address cETH = 0xBe839b6D93E3eA47eFFcCA1F27841C917a8794f3; // ropsten
+
+    //0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B 
+    constructor(address _comptroller) public {
+        Compound = _comptroller; 
+    }
+    
+    function initialize(address _comptroller) public onlyOwner {
+        Compound = _comptroller; 
+    }
+    
+    function setCETH(address _cETH) public onlyOwner {
+        cETH = _cETH; 
+    }
 
     function name() public override view returns (string memory){
         return lenderName;
     }
-
-    function getLpToken(address token) public  override view returns (address){
-        return token; 
+    
+    //0x54188bbedd7b68228fa89cbdda5e3e930459c6c6
+    function getLpTokenTest() public view  returns (address,address[] memory){
+        address _lpToken = address(0);
+        (address[] memory _cTokens) = IComptroller(Compound).getAllMarkets();
+        (address _token) = ICToken(_cTokens[0]).underlying();
+        (address _token2) = ICToken(_cTokens[1]).underlying();
+        (address _token3) = ICToken(_cTokens[2]).underlying();
+        (address _token4) = ICToken(_cTokens[3]).underlying();
+        // (address _token5) = ICToken(_cTokens[4]).underlying(); eth
+            
+        // for(uint i = 0; i < _cTokens.length; i++) { 
+        //   (address _token) = ICToken(_cTokens[i]).underlying();
+        //   _lpToken = _token;
+        // }
+        return (_lpToken, _cTokens); 
+    }
+  
+    function getLpToken(address token) public view override returns (address){
+        // 0x0000000000000000000000000000000000000000
+        address _lpToken = address(0);
+        if(token == _lpToken){
+            return cETH; 
+        }
+        
+        (address[] memory _cTokens) = IComptroller(Compound).getAllMarkets();
+        for(uint i = 0; i < _cTokens.length; i++) { 
+            address _cToken = _cTokens[i];
+            if(_cToken != cETH){
+                (address _token) = ICToken(_cToken).underlying();
+               if(_token == token){
+                   return _cToken; 
+               }
+            } 
+        }
+        return _lpToken; 
     }
 
     /*

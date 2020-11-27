@@ -15,24 +15,24 @@ import "./interfaces/IAPR.sol";
 contract AaveAPR  is Ownable,IAPR {
     using SafeMath for uint256;
     using Address for address;
-    address  AAVE; 
+    address  Aave; 
     string  lenderName = "Aave";
 
     // 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8 mainnet
-    constructor(address _addressesProvider) public {
-        AAVE = _addressesProvider; 
+    constructor(address _provider) public {
+        Aave = _provider; 
     }
 
     function getAaveCore() public view returns (address) {
-        return address(ILendingPoolAddressesProvider(AAVE).getLendingPoolCore());
+        return address(ILendingPoolAddressesProvider(Aave).getLendingPoolCore());
     }
 
     function getAave()  view  public returns (address) {
-        return address(ILendingPoolAddressesProvider(AAVE).getLendingPool());
+        return address(ILendingPoolAddressesProvider(Aave).getLendingPool());
     }
 
     function initialize(address _addressesProvider) public onlyOwner {
-        AAVE = _addressesProvider; 
+        Aave = _addressesProvider; 
     }
 
     function name() public override view returns (string memory){

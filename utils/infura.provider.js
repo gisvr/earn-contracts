@@ -28,6 +28,7 @@ const loader = setupLoader({
 }).truffle;
 
 const AaveAPR = loader.fromArtifact("AaveAPR")
+const LenderAPR = contract.fromArtifact("LenderAPR");
 
 module.exports = {
     async getArttifact() {
@@ -40,10 +41,8 @@ module.exports = {
         let wallet = web3.eth.accounts.wallet 
         let [owner] = accounts 
         
-        AaveAPR.setWallet(wallet) 
-        AaveAPR.defaults({
-            from: owner
-        })  
+        AaveAPR.setWallet(wallet).defaults({ from: owner });
+        LenderAPR.setWallet(wallet).defaults({ from: owner });
 
         return {
             BN,
@@ -51,6 +50,7 @@ module.exports = {
             constants,
             accounts,
             AaveAPR,
+            LenderAPR,
         }
     }
 }

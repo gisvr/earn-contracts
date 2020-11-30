@@ -33,30 +33,13 @@ contract CompoundAPR is Ownable,IAPR {
     function name() public override view returns (string memory){
         return lenderName;
     }
-    
-    //0x54188bbedd7b68228fa89cbdda5e3e930459c6c6
-    function getLpTokenTest() public view  returns (address,address[] memory){
-        address _lpToken = address(0);
-        (address[] memory _cTokens) = IComptroller(Compound).getAllMarkets();
-        (address _token) = ICToken(_cTokens[0]).underlying();
-        (address _token2) = ICToken(_cTokens[1]).underlying();
-        (address _token3) = ICToken(_cTokens[2]).underlying();
-        (address _token4) = ICToken(_cTokens[3]).underlying();
-        // (address _token5) = ICToken(_cTokens[4]).underlying(); eth
-            
-        // for(uint i = 0; i < _cTokens.length; i++) { 
-        //   (address _token) = ICToken(_cTokens[i]).underlying();
-        //   _lpToken = _token;
-        // }
-        return (_lpToken, _cTokens); 
-    }
-  
+ 
     function getLpToken(address token) public view override returns (address){
         // 0x0000000000000000000000000000000000000000
         address _lpToken = address(0);
         if(token == _lpToken){
             return cETH; 
-        }
+        } 
         
         (address[] memory _cTokens) = IComptroller(Compound).getAllMarkets();
         for(uint i = 0; i < _cTokens.length; i++) { 
@@ -75,14 +58,16 @@ contract CompoundAPR is Ownable,IAPR {
         get APR
     */ 
     function getAPR(address token) public override view returns (uint256) {
+        address _lpToken =  getLpToken(token);
         // * @notice返回此cToken的当前每块供应利率
         //* @返回每块的供应利率，按1e18缩放
-        return ICToken(token).supplyRatePerBlock().mul(blocksPerYear);
+        return ICToken(_lpToken).supplyRatePerBlock().mul(blocksPerYear);
     }
 
     // 调整收益率 - 可操作的量
     function getAPRAdjusted(address token, uint256 _supply) public override view returns (uint256) {
-        ICToken c = ICToken(token);
+         address _lpToken =  getLpToken(token);
+        ICToken c = ICToken(_lpToken);
         // * @notice返回此cToken的当前每块供应利率
         //* @返回每块的供应利率，按1e18缩放
         address model = ICToken(token).interestRateModel();
@@ -109,12 +94,4 @@ contract CompoundAPR is Ownable,IAPR {
             c.reserveFactorMantissa()
         ).mul(blocksPerYear);
     }
-
-    // function supply(address cToken,uint amount) public {
-    //     require(ICToken(cToken).mint(amount) == 0, "COMPOUND: supply failed");
-    // }
-
-    // function balance(address cToken,address user) public view returns (uint256) {
-    //     return IERC20(cToken).balanceOf(address(user));
-    // }
 }

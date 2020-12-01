@@ -8,3 +8,15 @@
 3. 在 左侧 FILE EXPLORERS 中看到一个新增加的 localhost目录。 
 
 开始使用 Remix 
+
+##  部署
+验证部署脚本
+```
+truffle develop
+```
+
+```
+truffle migrate --network ropsten --reset
+```
+
+

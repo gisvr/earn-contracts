@@ -11,16 +11,16 @@ const LenderAPR = artifacts.require("LenderAPR");
 const StrategyLender = artifacts.require("StrategyLender");
 
 module.exports = async (deployer, network, accounts) => {
-    await deployer.deploy(LenderAPR);
-    let controller = await mController.deployed(); 
+    let [ower, user1] = accounts
+    let controller = await mController.deployed();
     let lenderAPR = await LenderAPR.deployed();
 
     let aaveDAI,compZRX
-    if (network == "ropsten") {
+    if (network == "ropsten" || network =="develop") {
         aaveDAI = "0x9F7A946d935c8Efc7A8329C0d894A69bA241345A" // aave
-        compZRX = "0x00e02a5200ce3d5b5743f5369deb897946c88121" // comp
-    } 
+        compZRX = "0xe4c6182ea459e63b8f1be7c428381994ccc2d49c" // comp underlying
+    }
 
-    await deployer.deploy(StrategyLender,[controller.address,compZRX,lenderAPR.address]);
-    
+    await deployer.deploy(StrategyLender,controller.address,compZRX,lenderAPR.address,{from:user1});
+
 };

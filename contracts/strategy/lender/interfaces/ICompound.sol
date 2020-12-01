@@ -10,7 +10,5 @@ interface ICompound { //ICToken
     function balanceOf(address account) external returns (uint256);
 
     function exchangeRateStored() external view returns (uint);
-
- 
 }
  

@@ -6,6 +6,7 @@ import "../strategy/apr/interfaces/IAave.sol";
 
 contract LendingPoolAddressesProvider is ILendingPoolAddressesProvider {
     address public coreAddress;
+    
     function getLendingPool() override(ILendingPoolAddressesProvider) public view returns (address){
         return coreAddress;
     }

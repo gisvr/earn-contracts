@@ -12,6 +12,14 @@ contract MockAPR is IAPR {
         core= _core;
     }
 
+    function getController(bool _core) public view override returns (address) {
+        if(_core){
+            
+        }
+        return core;
+    }
+    
+
      function getAaveCore() public view returns (address) {
         return core;
     }

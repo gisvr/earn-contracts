@@ -9,22 +9,24 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IStrategy.sol";
 import "../interfaces/ILenderAPR.sol";
 
-// import "../interfaces/IDforce.sol"; 
+// import "../interfaces/IDforce.sol";
 // import "../interfaces/IController.sol";
 
 import "./lender/interfaces/ICompound.sol";
 import "./lender/interfaces/IAave.sol";
 import "./apr/interfaces/IAPR.sol";
+import "./apr/interfaces/ICompound.sol";
 
-interface IAaveAPR {
-    function getAaveCore() external view returns (address);
-    function getAave() external view    returns (address);
-}
+
+// interface IAaveAPR {
+//     function getAaveCore() external view returns (address);
+//     function getAave() external view    returns (address);
+// }
 
 contract StrategyLender is IStrategy {
     using SafeERC20 for IERC20;
     using Address for address;
-    using SafeMath for uint256; 
+    using SafeMath for uint256;
 
     event UnDepoist(string name,address indexed lpAddres);
 
@@ -33,11 +35,11 @@ contract StrategyLender is IStrategy {
     address public want;
     address public governance;
     address public controller;
-    address public strategist;
-    address public recommend = 0x540d7E428D5207B30EE03F2551Cbb5751D3c7569;
-    address public apr; 
+    address public strategist; 
+    address public apr;
+    ILenderAPR.Lender public recommend;
 
- 
+
 
     constructor (address _controller, address _want,address _apr) public {
         want = address(_want);
@@ -51,119 +53,133 @@ contract StrategyLender is IStrategy {
     // 0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108 //dai
     // 0x3544e9b8B0f9Ce4dD01B2C89700BdC9FE22e09aa
     // https://ropsten.etherscan.io/tx/0x9fd4287d506126c9bdd49ff11b8a8f0bf6186acdd09e611679b3b64982bf079b
-     function wantBalance() public   returns (uint256,address,address) {
+  
+     function wantBalance(address _recommend) public view returns ( string memory,uint256,address,address) {
         (ILenderAPR.Lender memory _lender) = ILenderAPR(apr).recommend(want);
-        recommend =address(_lender.lender); 
- 
-        uint256 _balance =   IERC20(want).balanceOf(address(this));
-        address _lpToken = IAPR(recommend).getLpToken(want);
-        
-        if(_balance>0){
-           string memory _lenderName= _lender.name;
-           bytes32 name = keccak256(abi.encodePacked(_lenderName));
-           if (name == keccak256(abi.encodePacked("Aave"))) { 
-                address _coreAddr = IAaveAPR(recommend).getAaveCore(); 
-                IERC20(want).safeIncreaseAllowance(_coreAddr, _balance);
-                // aave resver
-                _supplyAave(want,_balance); 
-                emit Depoist("AA",_coreAddr,_balance); 
-           } 
-        }
-
-        return (_balance,recommend,_lpToken);
-     }
-     
-     function wantBalance(address _recommend) public view returns ( string memory,uint256,address,address) { 
-        (ILenderAPR.Lender memory _lender) = ILenderAPR(apr).recommend(want);
-        address _lenderAddr =address(_lender.lender); 
+        address _lenderAddr =address(_lender.lender);
         address _lpToken = IAPR(_lenderAddr).getLpToken(want);
-        uint256 _balance =   IERC20(want).balanceOf(address(this)); 
+        uint256 _balance =   IERC20(want).balanceOf(address(this));
         string memory _lenderName= _lender.name;
-        
+
         bytes32 name = keccak256(abi.encodePacked(_lenderName));
-           if (name == keccak256(abi.encodePacked("Aave"))) { 
-                // _lpToken = IAaveAPR(_lenderAddr).getAaveCore(); 
+           if (name == keccak256(abi.encodePacked("Aave"))) {
+                // _lpToken = IAaveAPR(_lenderAddr).getAaveCore();
            }
         // _lpToken = msg.sender;
         return  (_lenderName,_balance,_lenderAddr,_lpToken);
-     } 
+     }
 
      function deposit() public override(IStrategy){
-        (ILenderAPR.Lender memory _lender) = ILenderAPR(apr).recommend(want);
-        recommend =address(_lender.lender); 
-
-        string memory _lenderName= _lender.name;
+        ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want); 
+        address _lender=address(recommend.lender); 
+        string memory _lenderName= recommend.name;
+        if(_recommend.lender != _lender){
+             withdrawAll(); // 体现移仓
+            _lender = address(_recommend.lender);
+            _lenderName =_recommend.name;
+        }
+        
 
         uint256 _balance = IERC20(want).balanceOf(address(this));
         if(_balance>0){
+            // 将合约的ERC20资产转入 LP 中，获得LP资产
            bytes32 name = keccak256(abi.encodePacked(_lenderName));
-           if (name == keccak256(abi.encodePacked("Aave"))) { 
-                address _coreAddr = IAaveAPR(recommend).getAaveCore(); 
+           if (name == keccak256(abi.encodePacked("Aave"))) {
+                // address _coreAddr = IAaveAPR(_lender).getAaveCore();
+                address _coreAddr = IAPR(_lender).getController(true);
                 IERC20(want).safeIncreaseAllowance(_coreAddr, _balance);
-                _supplyAave(want,_balance); 
+                _supplyAave(want,_balance);
                 return;
-                // emit Depoist("AA",_coreAddr,_balance); 
-           } 
-            
-           if (name == keccak256(abi.encodePacked("Compound"))) { 
+           }
+
+           if (name == keccak256(abi.encodePacked("Compound"))) {
                //接受资产的合约地址
-                address _lpToken = IAPR(recommend).getLpToken(want); 
-                // 拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度.然后才能充值。    
+                address _lpToken = IAPR(_lender).getLpToken(want);
+                // 拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度.然后才能充值。
                 IERC20(want).safeIncreaseAllowance(_lpToken, _balance);
-                _supplyCompound(_lpToken,_balance); 
+                _supplyCompound(_lpToken,_balance);
                 return;
-                // emit Depoist("CC",_lpToken,_balance);
-           }  
-           // 将合约的ERC20资产转入 LP 中，获得LP资产 
-        } 
-        emit UnDepoist(_lenderName,recommend); 
-        //supplyCompound
+           }
+        }
+        emit UnDepoist(_lenderName,_lender);
      }
 
     // _reserve  underlying asset
-    function _supplyAave(address token,uint256 amount) internal  { 
+    function _supplyAave(address token,uint256 amount) internal  {
+        address _lender=address(recommend.lender); 
         //获取能充值的地址
-        address _lendpool=IAaveAPR(recommend).getAave();
-        IAave(_lendpool).deposit(token, amount, 0); 
+        // address _lendpool=IAaveAPR(_lender).getAave();
+        address _lendpool = IAPR(_lender).getController(false);
+        IAave(_lendpool).deposit(token, amount, 0);
     }
 
-    function _balanceAave() public view returns (uint256) {
-        address _lpToken = IAPR(recommend).getLpToken(want);
+    //Recommend 的余额
+    function  balanceRecommend() public view returns (uint256) {
+        address _lender=address(recommend.lender); 
+        address _lpToken = IAPR(_lender).getLpToken(want);
         return IERC20(_lpToken).balanceOf(address(this));
     }
+ 
+    function withdrawAll() override(IStrategy) public returns (uint){
+        uint256 _balance = balanceRecommend();
+        withdraw(_balance);
+        return _balance;
+    }
 
-    //  function withdrawAave() public  {
-    //     uint256 _aaveBalance = _balanceAave();
-    //     if(_aaveBalance>0){
-    //         address _lpToken = IAPR(recommend).getLpToken(want);
-    //         IAToken(_lpToken).redeem(_aaveBalance);
-    //     } 
-    // }
+    function withdraw(uint256 _balance) public override(IStrategy) { 
+        address _lender=address(recommend.lender); 
+        string memory _lenderName= recommend.name;
+        
+        if(_balance>0){
+            address _lpToken = IAPR(_lender).getLpToken(want);
+            bytes32 name = keccak256(abi.encodePacked(_lenderName));
+           if (name == keccak256(abi.encodePacked("Aave"))) {
+                IAToken(_lpToken).redeem(_balance);
+                return;
+           }
 
-    function withdraw(uint256 _aaveBalance) public override(IStrategy) {
-        // uint256 _aaveBalance = _balanceAave();
-        if(_aaveBalance>0){
-            address _lpToken = IAPR(recommend).getLpToken(want);
-            IAToken(_lpToken).redeem(_aaveBalance);
-        } 
+           if (name == keccak256(abi.encodePacked("Compound"))) { 
+                require(ICompound(_lpToken).redeem(_balance) == 0, "COMPOUND: supply failed");
+                return;
+           }
+        }
     }
 
     function _balance() public view returns (uint256) {
         return IERC20(want).balanceOf(address(this));
     }
+
+    function _supplyCompound(address lpToken,uint256 amount) internal {
+        require(ICompound(lpToken).mint(amount) == 0, "COMPOUND: supply failed");
+    }
+
+
+    function redeemCompound(address lpToken,uint256 amount) public {
+        require(ICompound(lpToken).redeem(amount) == 0, "COMPOUND: redeem failed");
+    }
+
+    function claimComp() public { 
+       address _lender=address(recommend.lender); 
+       string memory _lenderName= recommend.name;
+       bytes32 name = keccak256(abi.encodePacked(_lenderName)); 
+        if (name == keccak256(abi.encodePacked("Compound"))) { 
+            address _controller = IAPR(_lender).getController(true); 
+            IComptroller(_controller).claimComp(address(this));
+        }
+    }
+
+    function compBalance() public view returns (uint256 ) { 
+       address _lender=address(recommend.lender); 
+       string memory _lenderName= recommend.name;
+       bytes32 name = keccak256(abi.encodePacked(_lenderName)); 
+        if (name == keccak256(abi.encodePacked("Compound"))) { 
+            address _controller = IAPR(_lender).getController(true); 
+            return  IComptroller(_controller).compAccrued(address(this));
+        }else{
+            return 0;
+        }
+    }
  
-    function _supplyCompound(address lptoken,uint256 amount) internal {
-        require(ICompound(lptoken).mint(amount) == 0, "COMPOUND: supply failed");
-    }
-
-
-    function balanceCompound(address lptoken) public returns (uint256 amount) { 
-        return ICompound(lptoken).balanceOf(address(this));
-    }
-
-    function redeemCompound(address lptoken,uint256 amount) public {
-        require(ICompound(lptoken).redeem(amount) == 0, "COMPOUND: supply failed");
-    }
 
     function harvest() override(IStrategy) external {
 
@@ -172,14 +188,10 @@ contract StrategyLender is IStrategy {
     function withdraw(address) override(IStrategy) external {
 
     }
- 
-    function withdrawAll() override(IStrategy) external returns (uint){
-        return uint(1);
-    }
 
     function balanceOf() override(IStrategy) external view returns (uint){
         return _balance()
-        .add(_balanceAave());
+        .add(balanceRecommend());
     }
 
     // incase of half-way error
@@ -193,5 +205,5 @@ contract StrategyLender is IStrategy {
         (bool result,) =  msg.sender.call{value:_bal}("");
         require(result, "transfer of ETH failed");
     }
- 
+
 }

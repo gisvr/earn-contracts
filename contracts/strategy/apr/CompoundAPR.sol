@@ -33,6 +33,10 @@ contract CompoundAPR is Ownable,IAPR {
     function name() public override view returns (string memory){
         return lenderName;
     }
+
+    function getController(bool _core)  view  public override returns (address) {
+        return Compound; 
+    }
  
     function getLpToken(address token) public view override returns (address){
         // 0x0000000000000000000000000000000000000000

@@ -31,6 +31,15 @@ contract AaveAPR  is Ownable,IAPR {
         return address(ILendingPoolAddressesProvider(Aave).getLendingPool());
     }
 
+    function getController(bool _core)  view  public override returns (address) {
+        if(_core){
+            return getAaveCore();
+        }else{
+            return getAave();
+        } 
+    }
+    
+
     function initialize(address _addressesProvider) public onlyOwner {
         Aave = _addressesProvider; 
     }

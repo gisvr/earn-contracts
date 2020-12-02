@@ -83,6 +83,7 @@ contract mController {
         approvedStrategies[_token][_strategy] = true;
     }
 
+    // 撤回策略 
     function revokeStrategy(address _token, address _strategy) public {
         require(msg.sender == governance, "!governance");
         approvedStrategies[_token][_strategy] = false;
@@ -105,7 +106,7 @@ contract mController {
         strategies[_token] = _strategy;
     }
 
-    function earn(address _token, uint _amount) public {
+    function earnbak(address _token, uint _amount) public {
         address _strategy = strategies[_token];
         //yUSDC 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 -> 0xA30d1D98C502378ad61Fe71BcDc3a808CF60b897
         address _want = IControllerStrategy(_strategy).want();
@@ -115,6 +116,20 @@ contract mController {
             address converter = converters[_token][_want];
             IERC20(_token).safeTransfer(converter, _amount);
             _amount = IConverter(converter).convert(_strategy);
+            IERC20(_want).safeTransfer(_strategy, _amount);
+        } else {
+            IERC20(_token).safeTransfer(_strategy, _amount);
+        }
+        IControllerStrategy(_strategy).deposit();
+    }
+
+    function earn(address _token, uint _amount) public {
+        address _strategy = strategies[_token];
+        //yUSDC 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 -> 0xA30d1D98C502378ad61Fe71BcDc3a808CF60b897
+        address _want = IControllerStrategy(_strategy).want();
+        //  -> StrategyCurveYVoterProxy.sol
+        if (_want != _token) {
+            // 给策略地址 --> 转入余额 
             IERC20(_want).safeTransfer(_strategy, _amount);
         } else {
             IERC20(_token).safeTransfer(_strategy, _amount);

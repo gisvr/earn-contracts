@@ -23,14 +23,22 @@ contract LendingPoolAddressesProvider is ILendingPoolAddressesProvider {
 contract LendingPoolCore is ILendingPoolCore {
     address strategyAddress;
     uint currentLiquidityRate = 2*1e27;
+
+     // 获取资产Atoken地址
+    function getReserveATokenAddress(address _reserve) public view override returns (address){
+      return strategyAddress;  
+    }
+    
     // 获取资产当前的流动比例
     function getReserveCurrentLiquidityRate(address _reserve)
         override(ILendingPoolCore)
         public
         view
-    returns (
-        uint256 liquidityRate
-    ){
+        returns 
+        (
+            uint256 liquidityRate
+        )
+    {
         return currentLiquidityRate;
     }
 

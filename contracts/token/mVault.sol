@@ -39,6 +39,7 @@ contract mVault is ERC20 {
         string(abi.encodePacked("m", ERC20(_token).symbol()))
     ) {
         token = IERC20(_token);
+        // 指定 vault的小数位
         _setupDecimals(ERC20(_token).decimals());
         governance = msg.sender;
         controller = _controller;

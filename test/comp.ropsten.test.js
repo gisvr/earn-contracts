@@ -47,16 +47,11 @@ describe('AaveAPR ropsten', async () => {
     it("StrategyLender balance", async () => {
         let strategyLender =await provider.getArttifact("StrategyLender")
         let recommend = await strategyLender.balanceRecommend()
-        // let recommend = await strategyLender._balance()
-        console.log("balanceRecommend",recommend.toString())
+        let balance = await strategyLender.balance()
+        console.log("balanceRecommend",recommend.toString(),balance.toString())
     }).timeout(500000)
 
-    it("StrategyLender comp balance", async () => {
-        let strategyLender =await provider.getArttifact("StrategyLender")
-        let recommend = await strategyLender.compBalance()
-        // let recommend = await strategyLender._balance()
-        console.log(recommend.toString())
-    }).timeout(500000)
+
 
     it("StrategyLender redeem", async () => {
         let strategyLender =await provider.getArttifact("StrategyLender")
@@ -66,13 +61,32 @@ describe('AaveAPR ropsten', async () => {
         console.log(recommend)
     }).timeout(500000)
 
+    it("StrategyLender withdrawAll", async () => {
+        let strategyLender =await provider.getArttifact("StrategyLender")
+        let [ower, user1] = provider.getAccounts()
+        let recommend = await strategyLender.withdrawAll();
+        console.log(recommend)
+    }).timeout(500000)
+
+    it("StrategyLender comp  ", async () => {
+        let strategyLender =await provider.getArttifact("StrategyLender")
+
+
+        let tx = await strategyLender.claimComp()
+        let recommend = await strategyLender.compBalance()
+        console.log(recommend.toString())
+        console.log(tx)
+    }).timeout(500000)
+
     it("StrategyLender inCaseTokenGetsStuck", async () => {
         let strategyLender =await provider.getArttifact("StrategyLender")
         let [ower, user1,user2] = provider.getAccounts()
         let balance = await strategyLender.balanceRecommend()
         console.log(balance.toString());
+        let comp = "0x1fe16de955718cfab7a44605458ab023838c2793";
+        let tx = await strategyLender.inCaseTokenGetsStuck(comp,{from: user2.address})
         let recommend = await strategyLender.inCaseTokenGetsStuck(zrx,{from: user2.address})
-        console.log(recommend)
+        console.log(tx)
     }).timeout(500000)
 
 

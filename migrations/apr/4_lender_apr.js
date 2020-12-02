@@ -30,5 +30,4 @@ module.exports = async (deployer, network, accounts) => {
     console.log("lenderAPR",foo1.name);
     console.log("lenderAPR",foo1.apr.toString());
 
-    // await lenderAPR.removeLender(0,{from:user1});
 };

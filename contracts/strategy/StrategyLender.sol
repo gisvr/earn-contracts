@@ -71,13 +71,17 @@ contract StrategyLender is IStrategy {
 
      function deposit() public override(IStrategy){
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want); 
-        address _lender=address(recommend.lender); 
-        string memory _lenderName= recommend.name;
-        if(_recommend.lender != _lender){
-             withdrawAll(); // 体现移仓
-            _lender = address(_recommend.lender);
-            _lenderName =_recommend.name;
+        if(recommend.apr==0){
+            recommend = _recommend;
         }
+        address _lender=address(recommend.lender); 
+       
+        if(_recommend.lender != _lender){ 
+             withdrawAll(); // 体现移仓
+             recommend = _recommend;
+            _lender = address(recommend.lender);
+        }
+         string memory _lenderName= recommend.name;
         
 
         uint256 _balance = IERC20(want).balanceOf(address(this));

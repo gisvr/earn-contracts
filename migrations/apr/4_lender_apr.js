@@ -16,14 +16,19 @@ module.exports = async (deployer, network, accounts) => {
 
     let aaveDAI,compZRX
     if (network == "ropsten") {
-        aaveDAI = "0x9F7A946d935c8Efc7A8329C0d894A69bA241345A" // aave
-        compZRX = "0xe4c6182ea459e63b8f1be7c428381994ccc2d49c" // comp
+        aaveDAI = "0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108"; // aave
+        compZRX = "0xe4c6182ea459e63b8f1be7c428381994ccc2d49c";// comp
 
     }
 
-    // await lenderAPR.addLender("Aave", aaveAPR.address);
+    await lenderAPR.addLender("Aave", aaveAPR.address,{from:user1});
     await lenderAPR.addLender("Compound", compoundAPR.address,{from:user1});
 
-    // let foo1 = await lenderAPR.recommend(compZRX,{from,user1})
-    // console.log("lenderAPR",lenderAPR.address, foo1)
+    let zeroAddr = "0x0000000000000000000000000000000000000000";
+    let foo1 = await lenderAPR.recommend(zeroAddr);
+    console.log("lenderAPR",foo1.lender);
+    console.log("lenderAPR",foo1.name);
+    console.log("lenderAPR",foo1.apr.toString());
+
+    await lenderAPR.removeLender(0,{from:user1});
 };

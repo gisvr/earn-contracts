@@ -4,7 +4,7 @@ const {projectId,projectId1, privateKeys, etherscanKey} = require("/Users/liyu/D
 
 
 module.exports = {
-    migrations_directory: "./migrations/compound",
+    migrations_directory: "./migrations/apr",
     api_keys: {
         etherscan: etherscanKey
     },

@@ -15,17 +15,23 @@ import "./interfaces/IAPR.sol";
 contract AaveAPR  is Ownable,IAPR {
     using SafeMath for uint256;
     using Address for address;
-    address  Aave; 
-    string  lenderName = "Aave";
+    address public  Aave; 
+    string public lenderName = "Aave"; 
+    address aETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     // 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8 mainnet
     constructor(address _provider) public {
         Aave = _provider; 
     }
 
+    function setETH(address _ETH) public onlyOwner {
+        aETH = _ETH; 
+    }
+
     function getAaveCore() public view returns (address) {
         return address(ILendingPoolAddressesProvider(Aave).getLendingPoolCore());
     }
+    
 
     function getAave()  view  public returns (address) {
         return address(ILendingPoolAddressesProvider(Aave).getLendingPool());
@@ -37,8 +43,7 @@ contract AaveAPR  is Ownable,IAPR {
         }else{
             return getAave();
         } 
-    }
-    
+    } 
 
     function initialize(address _addressesProvider) public onlyOwner {
         Aave = _addressesProvider; 
@@ -48,35 +53,45 @@ contract AaveAPR  is Ownable,IAPR {
         return lenderName;
     }
 
-    function getLpToken(address token) public override view returns (address){
+    function getEth(address _token) internal view  returns (address){ 
+        if(_token == address(0)){
+            _token = aETH;
+        }  
+        return _token;
+    }
+
+    function getLpToken(address _token) public override view returns (address){
+        _token = getEth(_token);
         address aave = getAave();
         ILendingPool lendPool = ILendingPool(aave);
-        (,,,,,,,,,,,address aTokenAddress,) = lendPool.getReserveData(token);
+        (,,,,,,,,,,,address aTokenAddress,) = lendPool.getReserveData(_token);
         return aTokenAddress; 
     }
 
     /*
         get APR
     */ 
-    function getAPR(address token) public override view returns (uint256) {
-        address aaveCore = getAaveCore();
-        ILendingPoolCore core = ILendingPoolCore(aaveCore);
+    function getAPR(address _token) public override view returns (uint256) {
+        _token = getEth(_token);
+        address _aaveCore = getAaveCore();
+        ILendingPoolCore core = ILendingPoolCore(_aaveCore);
         // 资产当前的流动性比率， 统一单位 到 e18 aave的单位是e27
-        return core.getReserveCurrentLiquidityRate(token).div(1e9);
+        return core.getReserveCurrentLiquidityRate(_token).div(1e9);
     }
 
-    function getAPRAdjusted(address token, uint256 _supply) public override view returns (uint256) {
-        address AaveCore = getAaveCore();
-        ILendingPoolCore core = ILendingPoolCore(AaveCore);
+    function getAPRAdjusted(address _token, uint256 _supply) public override view returns (uint256) {
+        _token = getEth(_token);
+        address _aaveCore = getAaveCore();
+        ILendingPoolCore core = ILendingPoolCore(_aaveCore);
         //获得资产的利率策略
-        IReserveInterestRateStrategy apr = IReserveInterestRateStrategy(core.getReserveInterestRateStrategyAddress(token));
+        IReserveInterestRateStrategy apr = IReserveInterestRateStrategy(core.getReserveInterestRateStrategyAddress(_token));
         //计算利率
         (uint256 newLiquidityRate,,) = apr.calculateInterestRates(
-            token,
-            core.getReserveAvailableLiquidity(token).add(_supply), // 可用的流动性
-            core.getReserveTotalBorrowsStable(token), // 总共的固定利率借出
-            core.getReserveTotalBorrowsVariable(token), // 总计浮动利率借出
-            core.getReserveCurrentAverageStableBorrowRate(token) // 当前平均固定借出利率
+            _token,
+            core.getReserveAvailableLiquidity(_token).add(_supply), // 可用的流动性
+            core.getReserveTotalBorrowsStable(_token), // 总共的固定利率借出
+            core.getReserveTotalBorrowsVariable(_token), // 总计浮动利率借出
+            core.getReserveCurrentAverageStableBorrowRate(_token) // 当前平均固定借出利率
         );
         // aave 的利率是 27位
         return newLiquidityRate.div(1e9);

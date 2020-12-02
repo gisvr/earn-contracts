@@ -4,14 +4,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol"; 
 import "./interfaces/ICompound.sol";
 import "./interfaces/IAPR.sol";
 contract CompoundAPR is Ownable,IAPR {
-    using SafeMath for uint256;
-    using Address for address; 
+    using SafeMath for uint256; 
     uint256 public blocksPerYear = 2102400; // 1年的秒数/ 15秒出块 = 31536000/15
     string public lenderName = "Compound";
     address public Compound; 
@@ -34,6 +31,7 @@ contract CompoundAPR is Ownable,IAPR {
     }
 
     function getController(bool _core)  view  public override returns (address) {
+        require(!_core,"is ok");
         return Compound; 
     }
  
@@ -53,6 +51,7 @@ contract CompoundAPR is Ownable,IAPR {
                }
             } 
         }
+        require(_lpToken != address(0),"LpToken don't exist!");
         return _lpToken; 
     }
 

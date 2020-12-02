@@ -6,15 +6,13 @@
 pragma solidity ^0.6.0; 
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/Address.sol"; 
+import "@openzeppelin/contracts/math/SafeMath.sol"; 
 import "./interfaces/IAave.sol";
 import "./interfaces/IAPR.sol";
 
 
 contract AaveAPR  is Ownable,IAPR {
-    using SafeMath for uint256;
-    using Address for address;
+    using SafeMath for uint256; 
     address public  Aave; 
     string public lenderName = "Aave"; 
     address aETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -59,30 +57,25 @@ contract AaveAPR  is Ownable,IAPR {
         }  
         return _token;
     }
-
+     
     function getLpToken(address _token) public override view returns (address){
         _token = getEth(_token);
-        address aave = getAave();
-        ILendingPool lendPool = ILendingPool(aave);
-        (,,,,,,,,,,,address aTokenAddress,) = lendPool.getReserveData(_token);
-        return aTokenAddress; 
+        // address aave = getAave();
+        // ILendingPool lendPool = ILendingPool(aave);
+        // (,,,,,,,,,,,address aTokenAddress,) = lendPool.getReserveData(_token);
+       return ILendingPoolCore(getAaveCore()).getReserveATokenAddress(_token);
+        // return aTokenAddress; 
     }
-
-    /*
-        get APR
-    */ 
+ 
     function getAPR(address _token) public override view returns (uint256) {
-        _token = getEth(_token);
-        address _aaveCore = getAaveCore();
-        ILendingPoolCore core = ILendingPoolCore(_aaveCore);
+        _token = getEth(_token); 
         // 资产当前的流动性比率， 统一单位 到 e18 aave的单位是e27
-        return core.getReserveCurrentLiquidityRate(_token).div(1e9);
+        return ILendingPoolCore(getAaveCore()).getReserveCurrentLiquidityRate(_token).div(1e9);
     }
 
     function getAPRAdjusted(address _token, uint256 _supply) public override view returns (uint256) {
-        _token = getEth(_token);
-        address _aaveCore = getAaveCore();
-        ILendingPoolCore core = ILendingPoolCore(_aaveCore);
+        _token = getEth(_token); 
+        ILendingPoolCore core = ILendingPoolCore(getAaveCore());
         //获得资产的利率策略
         IReserveInterestRateStrategy apr = IReserveInterestRateStrategy(core.getReserveInterestRateStrategyAddress(_token));
         //计算利率

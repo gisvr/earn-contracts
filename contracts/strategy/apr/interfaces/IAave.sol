@@ -30,7 +30,10 @@ interface ILendingPool {
     );
 }
 
-interface ILendingPoolCore {
+interface ILendingPoolCore { 
+     // 获取资产Atoken地址
+    function getReserveATokenAddress(address _reserve) external view returns (address);
+
     // 获取资产当前的流动比例
     function getReserveCurrentLiquidityRate(address _reserve)
     external

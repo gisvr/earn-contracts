@@ -4,7 +4,7 @@ const {projectId,projectId1, privateKeys, etherscanKey} = require("/Users/liyu/D
 
 
 module.exports = {
-    migrations_directory: "./migrations/comp",
+    migrations_directory: "./migrations/vault",
     api_keys: {
         etherscan: etherscanKey
     },
@@ -22,7 +22,7 @@ module.exports = {
         development: {host: "127.0.0.1", port: 8545, network_id: "*"},
 
         ropsten: {
-            provider: () => new HDWalletProvider(privateKeys, `https://ropsten.infura.io/v3/${projectId}`),
+            provider: () => new HDWalletProvider(privateKeys, `https://ropsten.infura.io/v3/${projectId1}`),
             network_id: 3,       // Ropsten's id
             gas: 2e6,        // Ropsten has a lower block limit than mainnet
             gasPrice:6e9,

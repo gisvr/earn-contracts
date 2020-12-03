@@ -32,5 +32,8 @@ module.exports = {
     },
     getAccounts() {
         return accounts
+    },
+    getWeb3() {
+        return web3
     }
 }

@@ -9,6 +9,7 @@ interface ICompound { //ICToken
 
     function balanceOf(address account) external returns (uint256);
 
+    // 获取compound ctoken 和 underlying 资产的兑换率
     function exchangeRateStored() external view returns (uint);
 }
  

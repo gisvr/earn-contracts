@@ -35,9 +35,10 @@ describe('AaveAPR ropsten', async () => {
         let apr = await erc20.balanceOf(user1.address)
         // console.log(apr.toString());
         let strategyLender =await provider.getArttifact("StrategyLender")
-        let foo1 = await erc20.transfer(strategyLender.address, 10e18.toString(), {from: user1.address})
-        // console.log(foo1)
         let foo2 = await erc20.balanceOf(strategyLender.address)
+        if(foo2.toString() == "0"){
+            foo2 = await erc20.transfer(strategyLender.address, 18e18.toString(), {from: user1.address})
+        }
         console.log("strategyLender balanceOf",foo2.toString())
         let recommend = await strategyLender.deposit()
         console.log(recommend)
@@ -46,20 +47,20 @@ describe('AaveAPR ropsten', async () => {
 
     it("StrategyLender balance", async () => {
         let strategyLender =await provider.getArttifact("StrategyLender")
-        let recommend = await strategyLender.balanceRecommend()
-        let balance = await strategyLender.balance()
+        let recommend = await strategyLender.balanceRecommend();
+        let balance = await strategyLender.balanceOf();
         console.log("balanceRecommend",recommend.toString(),balance.toString())
     }).timeout(500000)
 
 
 
-    it("StrategyLender redeem", async () => {
-        let strategyLender =await provider.getArttifact("StrategyLender")
-        let [ower, user1] = provider.getAccounts()
-        let balance = await strategyLender.balanceRecommend()
-        let recommend = await strategyLender.redeemCompound(compZRX,balance)
-        console.log(recommend)
-    }).timeout(500000)
+    // it("StrategyLender redeem", async () => {
+    //     let strategyLender =await provider.getArttifact("StrategyLender")
+    //     let [ower, user1] = provider.getAccounts()
+    //     let balance = await strategyLender.balanceRecommend()
+    //     let recommend = await strategyLender.withdraw(balance)
+    //     console.log(recommend)
+    // }).timeout(500000)
 
     it("StrategyLender withdrawAll", async () => {
         let strategyLender =await provider.getArttifact("StrategyLender")
@@ -71,10 +72,11 @@ describe('AaveAPR ropsten', async () => {
     it("StrategyLender comp  ", async () => {
         let strategyLender =await provider.getArttifact("StrategyLender")
 
-
+        let bal = await strategyLender.compBalance()
+        console.log("compBalance",bal.toString())
         let tx = await strategyLender.claimComp()
-        let recommend = await strategyLender.compBalance()
-        console.log(recommend.toString())
+        let endBal = await strategyLender.compBalance()
+        console.log(endBal.toString())
         console.log(tx)
     }).timeout(500000)
 

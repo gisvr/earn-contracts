@@ -48,12 +48,8 @@ contract StrategyLender is IStrategy {
         controller = _controller;
         apr = _apr;
     }
-
-    // 0xe0C86ECc6CC63154dE2459be1a36A6971bAa8d1C
-    // 0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108 //dai
-    // 0x3544e9b8B0f9Ce4dD01B2C89700BdC9FE22e09aa
-    // https://ropsten.etherscan.io/tx/0x9fd4287d506126c9bdd49ff11b8a8f0bf6186acdd09e611679b3b64982bf079b
-     function rebalance() internal{
+    
+    function rebalance() internal{
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want); 
         if(recommend.apr==0){
             recommend = _recommend;
@@ -131,6 +127,7 @@ contract StrategyLender is IStrategy {
            }
 
            if (name == Compound) { 
+                _balance = _balance.mul(ICompound(_lpToken).exchangeRateStored()).div(1e18); 
                 require(ICompound(_lpToken).redeem(_balance) == 0, "COMPOUND: redeem failed");
                 return;
            }
@@ -140,6 +137,26 @@ contract StrategyLender is IStrategy {
     function balance() public view returns (uint256) {
         return IERC20(want).balanceOf(address(this));
     }
+
+
+    function balanceOf() override(IStrategy) external view returns (uint){
+ 
+        address _lpToken = IAPR(recommend.lender).getLpToken(want);
+        uint _balance = IERC20(_lpToken).balanceOf(address(this));
+        bytes32 name = keccak256(abi.encodePacked(recommend.name));
+        if(_balance>0){  
+           if (name == Compound) {  
+                // Mantisa 1e18 to decimals
+              return _balance.mul(ICompound(_lpToken).exchangeRateStored()).div(1e18);
+           }
+        }
+        return _balance;
+    }
+
+    function _balanceCompoundInToken() internal view returns (uint256) {
+        
+    }
+
   
     function claimComp() public { 
        address _lender=address(recommend.lender); 
@@ -170,10 +187,6 @@ contract StrategyLender is IStrategy {
 
     function withdraw(address) override(IStrategy) external {
 
-    }
-
-    function balanceOf() override(IStrategy) external view returns (uint){
-        return  balance().add(balanceRecommend());
     }
 
     // incase of half-way error

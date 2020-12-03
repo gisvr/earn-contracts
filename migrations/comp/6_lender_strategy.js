@@ -15,14 +15,17 @@ module.exports = async (deployer, network, accounts) => {
     let controller = await mController.deployed();
     let lenderAPR = await LenderAPR.deployed();
 
-    let compZRX
-    if (network == "ropsten" || network =="develop") {
-        compZRX = "0xe4c6182ea459e63b8f1be7c428381994ccc2d49c" // comp underlying
-    }
+    let compZRX = "0xe4c6182ea459e63b8f1be7c428381994ccc2d49c" // underlyin
 
     await deployer.deploy(StrategyLender,controller.address,compZRX,lenderAPR.address,{from:user1});
 
     let strategy  = await StrategyLender.deployed();
+
+    // 设置 recommend
+    await strategy.deposit();
+
+    // 设置 controller
     await controller.approveStrategy(compZRX,strategy.address,{from:user1});
     await controller.setStrategy(compZRX,strategy.address,{from:user1});
+    console.log("controller",controller.address)
 };

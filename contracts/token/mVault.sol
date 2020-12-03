@@ -34,32 +34,33 @@ contract mVault is ERC20 {
 
     // 根据支持的资产信息创建 vault, 
     // 定义 contraller 通过 controller 操作strategy
-    constructor (address _token, address _controller) public ERC20(
+    // constructor (address _token, address _controller) public ERC20(
+    //     string(abi.encodePacked("mEarn ", ERC20(_token).name())),
+    //     string(abi.encodePacked("m", ERC20(_token).symbol()))
+    // ) {0xeA199722372dea9DF458dbb56be7721af117a9Bc //0xe1e1BbEAFA6540153db4F6570320c8F79e6136c3
+    constructor (address _controller,address _token) public ERC20(
         string(abi.encodePacked("mEarn ", ERC20(_token).name())),
         string(abi.encodePacked("m", ERC20(_token).symbol()))
-    ) {
+    ) { 
+       
         token = IERC20(_token);
-        // 指定 vault的小数位
+         // 指定 vault的小数位 
         _setupDecimals(ERC20(_token).decimals());
         governance = msg.sender;
         controller = _controller;
     }
-
+     
+    // 计算和vault 和 stragy 上的所有的 资产余额 
     function balance() public view returns (uint) {
-        return token.balanceOf(address(this))
-        .add(IController(controller).balanceOf(address(token)));
+        return token.balanceOf(address(this)) // 合约余额
+        .add(IController(controller).balanceOf(address(token))); // 策略余额
     }
 
     function setMin(uint _min) external {
         require(msg.sender == governance, "!governance");
         min = _min;
     }
-
-    function setGovernance(address _governance) public {
-        require(msg.sender == governance, "!governance");
-        governance = _governance;
-    }
-
+ 
     function setController(address _controller) public {
         require(msg.sender == governance, "!governance");
         controller = _controller;
@@ -113,8 +114,7 @@ contract mVault is ERC20 {
             if (_diff < _withdraw) {
                 r = b.add(_diff);
             }
-        }
-
+        } 
         token.safeTransfer(msg.sender, r);
     }
 

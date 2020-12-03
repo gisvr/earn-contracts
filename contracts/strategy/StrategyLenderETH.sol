@@ -16,17 +16,14 @@ import "./lender/interfaces/ICompound.sol";
 import "./lender/interfaces/IAave.sol";
 import "./apr/interfaces/IAPR.sol";
 import "./apr/interfaces/ICompound.sol";
-
-
-// interface IAaveAPR {
-//     function getAaveCore() external view returns (address);
-//     function getAave() external view    returns (address);
-// }
-
+import "./lender/CompoundLib.sol";
+import "./lender/AaveLib.sol";
+ 
 contract StrategyLenderETH is IStrategy {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
+    using AaveLib for AaveLib.Aave;
 
     event UnDepoist(string name,address indexed lpAddres);
 
@@ -47,12 +44,8 @@ contract StrategyLenderETH is IStrategy {
         strategist = msg.sender;
         controller = _controller;
         apr = _apr;
-    }
+    } 
 
-    // 0xe0C86ECc6CC63154dE2459be1a36A6971bAa8d1C
-    // 0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108 //dai
-    // 0x3544e9b8B0f9Ce4dD01B2C89700BdC9FE22e09aa
-    // https://ropsten.etherscan.io/tx/0x9fd4287d506126c9bdd49ff11b8a8f0bf6186acdd09e611679b3b64982bf079b
      function rebalance() internal{
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
         if(recommend.apr==0){
@@ -76,8 +69,13 @@ contract StrategyLenderETH is IStrategy {
            bytes32 name = keccak256(abi.encodePacked(_lenderName));
            if (name == Aave) {
                 address _coreAddr = IAPR(_lender).getController(true);
+                address _lendpool = IAPR(_lender).getController(false);
+             
+                // AaveLib.Aave memory _aave = AaveLib.Aave({lendingPool:_lendpool,core:_coreAddr}); 
+                AaveLib.Aave memory _aave = AaveLib.Aave(_lendpool,_coreAddr); 
                 IERC20(want).safeIncreaseAllowance(_coreAddr, _balance);
-                _supplyAave(want,_balance);
+                 _aave.suply(want,_balance);
+                // _supplyAave(want,_balance);
                 return;
            }
 
@@ -86,12 +84,25 @@ contract StrategyLenderETH is IStrategy {
                 address _lpToken = IAPR(_lender).getLpToken(want);
                 // 拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度.然后才能充值。
                 IERC20(want).safeIncreaseAllowance(_lpToken, _balance);
-                _supplyCompound(_lpToken,_balance);
+                CompoundLib.suply(_lpToken,_balance);
                 return;
            }
         }
         emit UnDepoist(_lenderName,_lender);
      }
+
+     function balanceOf() override(IStrategy) external view returns (uint){
+        address _lpToken = IAPR(recommend.lender).getLpToken(want);
+        uint256 _balance = IERC20(_lpToken).balanceOf(address(this));
+        bytes32 name = keccak256(abi.encodePacked(recommend.name));
+        if(_balance>0){  
+           if (name == Compound) {  
+                // Mantisa 1e18 to decimals
+              return  CompoundLib.balanceOf(_lpToken,address(this));
+           }
+        }
+        return _balance;
+    }
 
     // _reserve  underlying asset
     function _supplyAave(address _token,uint256 amount) internal  {
@@ -136,16 +147,7 @@ contract StrategyLenderETH is IStrategy {
     function balance() public view returns (uint256) {
         return IERC20(want).balanceOf(address(this));
     }
-
-    function _supplyCompound(address _lpToken,uint256 amount) internal {
-        require(ICompound(_lpToken).mint(amount) == 0, "COMPOUND: supply failed");
-    }
-
-
-    function redeemCompound(address lpToken,uint256 amount) public {
-        require(ICompound(lpToken).redeem(amount) == 0, "COMPOUND: redeem failed");
-    }
-
+ 
     function claimComp() public {
        address _lender=address(recommend.lender);
        string memory _lenderName= recommend.name;
@@ -176,11 +178,7 @@ contract StrategyLenderETH is IStrategy {
     function withdraw(address) override(IStrategy) external {
 
     }
-
-    function balanceOf() override(IStrategy) external view returns (uint){
-        return  balance().add(balanceRecommend());
-    }
-
+ 
     // incase of half-way error
     function inCaseTokenGetsStuck(IERC20 _TokenAddress)   public {
         uint qty = _TokenAddress.balanceOf(address(this));

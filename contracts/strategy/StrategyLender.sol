@@ -17,11 +17,7 @@ import "./lender/interfaces/IAave.sol";
 import "./apr/interfaces/IAPR.sol";
 import "./apr/interfaces/ICompound.sol";
 
-
-// interface IAaveAPR {
-//     function getAaveCore() external view returns (address);
-//     function getAave() external view    returns (address);
-// }
+ 
 
 contract StrategyLender is IStrategy {
     using SafeERC20 for IERC20;
@@ -140,7 +136,6 @@ contract StrategyLender is IStrategy {
 
 
     function balanceOf() override(IStrategy) external view returns (uint){
- 
         address _lpToken = IAPR(recommend.lender).getLpToken(want);
         uint _balance = IERC20(_lpToken).balanceOf(address(this));
         bytes32 name = keccak256(abi.encodePacked(recommend.name));
@@ -152,12 +147,7 @@ contract StrategyLender is IStrategy {
         }
         return _balance;
     }
-
-    function _balanceCompoundInToken() internal view returns (uint256) {
-        
-    }
-
-  
+ 
     function claimComp() public { 
        address _lender=address(recommend.lender); 
        string memory _lenderName= recommend.name;

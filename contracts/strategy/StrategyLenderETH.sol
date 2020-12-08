@@ -67,19 +67,15 @@ contract StrategyLenderETH is IStrategy {
         if(_balance>0){
             // 将合约的ERC20资产转入 LP 中，获得LP资产
            bytes32 name = keccak256(abi.encodePacked(_lenderName));
-           if (name == Aave) {
+           if (name == AaveLib.Name) {
                 address _coreAddr = IAPR(_lender).getController(true);
-                address _lendpool = IAPR(_lender).getController(false);
-             
-                // AaveLib.Aave memory _aave = AaveLib.Aave({lendingPool:_lendpool,core:_coreAddr}); 
-                AaveLib.Aave memory _aave = AaveLib.Aave(_lendpool,_coreAddr); 
-                IERC20(want).safeIncreaseAllowance(_coreAddr, _balance);
-                 _aave.suply(want,_balance);
-                // _supplyAave(want,_balance);
+                address _lendpool = IAPR(_lender).getController(false);  
+                AaveLib.Aave memory _aave = AaveLib.Aave(_lendpool,_coreAddr);  
+                _aave.suply(want,_balance); 
                 return;
            }
 
-           if (name == Compound) {
+           if (name == CompoundLib.Name) {
                //接受资产的合约地址
                 address _lpToken = IAPR(_lender).getLpToken(want);
                 // 拥有资产的合约, 将想要的 ERC20资产, 授权 LP 资产的代理额度.然后才能充值。
@@ -91,26 +87,21 @@ contract StrategyLenderETH is IStrategy {
         emit UnDepoist(_lenderName,_lender);
      }
 
-     function balanceOf() override(IStrategy) external view returns (uint){
+     function balanceOf() override(IStrategy) public view returns (uint){
         address _lpToken = IAPR(recommend.lender).getLpToken(want);
-        uint256 _balance = IERC20(_lpToken).balanceOf(address(this));
         bytes32 name = keccak256(abi.encodePacked(recommend.name));
-        if(_balance>0){  
-           if (name == Compound) {  
-                // Mantisa 1e18 to decimals
-              return  CompoundLib.balanceOf(_lpToken,address(this));
-           }
+         
+        if (name == AaveLib.Name) {
+           return  IAToken(_lpToken).balanceOf(address(this));
         }
-        return _balance;
-    }
 
-    // _reserve  underlying asset
-    function _supplyAave(address _token,uint256 amount) internal  {
-        address _lender=address(recommend.lender);
-        //获取能充值的地址
-        address _lendpool = IAPR(_lender).getController(false);
-        IAave(_lendpool).deposit(_token, amount, 0);
+        if (name == CompoundLib.Name) {   
+           return  CompoundLib.balanceOf(_lpToken,address(this));
+        }
+        
+        return IERC20(_lpToken).balanceOf(address(this));
     }
+ 
 
     //Recommend 的余额
     function  balanceRecommend() public view returns (uint256) {

@@ -9,7 +9,8 @@ import "./interfaces/ICompound.sol";
 library CompoundLib {
     using SafeMath for uint256;
  
-  
+   bytes32 internal constant Name = keccak256(abi.encodePacked("Compound"));
+
     function suply(address _lpToken, uint256 _amount) internal  {
         require(ICompound(_lpToken).mint(_amount) == 0, "COMPOUND: supply failed");
     }

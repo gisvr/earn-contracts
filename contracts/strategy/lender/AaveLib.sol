@@ -13,21 +13,23 @@ library AaveLib {
         address core;  
     }
  
-    bytes32 internal constant AaveName = keccak256(abi.encodePacked("Aave"));
-  
-    function suply(Aave memory aave,address _token, uint256 _amount) internal  {
-       IAave(aave.lendingPool).deposit(_token, _amount, 0);
+    bytes32 internal constant Name = keccak256(abi.encodePacked("Aave"));
+   
+    function suply(Aave memory aave,address _token,uint256 _amount) internal  {  
+        IAave  _aave = IAave(aave.lendingPool);
+        if(_token == address(0)){ 
+           _aave.deposit{value:msg.value}(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,msg.value,0);
+        }else{
+           _aave.deposit(_token, _amount, 0);
+        } 
     }
 
-    // function balanceOf(address _lpToken, address _account) internal view returns (uint) {
-    //     uint _balance = IERC20(_lpToken).balanceOf(_account); 
-    //     // Mantisa 1e18 to decimals
-    //     return _balance.mul(ICompound(_lpToken).exchangeRateStored()).div(1e18);  
-    // }
+    function balanceOf(address _lpToken, address _account) internal view returns (uint) {
+        return IERC20(_lpToken).balanceOf(_account);  
+    }
 
-    // function redeem(address _lpToken, uint256 _balance) internal  {
-    //     _balance = _balance.mul(ICompound(_lpToken).exchangeRateStored()).div(1e18); 
-    //     require(ICompound(_lpToken).redeem(_balance) == 0, "COMPOUND: redeem failed");
-    // }
+    function withdraw(address _lpToken, uint256 _balance) internal  { 
+        IAToken(_lpToken).redeem(_balance);
+    }
  
 } 

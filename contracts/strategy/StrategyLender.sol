@@ -135,8 +135,8 @@ contract StrategyLender is IStrategy {
     }
 
 
-    function balanceOf() override(IStrategy) external view returns (uint){
-        address _lpToken = IAPR(recommend.lender).getLpToken(want);
+    function balanceOf(address _want) override(IStrategy) external view returns (uint){
+        address _lpToken = IAPR(recommend.lender).getLpToken(_want);
         uint _balance = IERC20(_lpToken).balanceOf(address(this));
         bytes32 name = keccak256(abi.encodePacked(recommend.name));
         if(_balance>0){  
@@ -170,15 +170,6 @@ contract StrategyLender is IStrategy {
         }
     }
  
-
-    function harvest() override(IStrategy) external {
-
-    }
-
-    function withdraw(address) override(IStrategy) external {
-
-    }
-
     // incase of half-way error
     function inCaseTokenGetsStuck(IERC20 _TokenAddress)   public {
         uint qty = _TokenAddress.balanceOf(address(this));

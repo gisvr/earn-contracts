@@ -21,7 +21,7 @@ library AaveLib {
            _aave.deposit{value:_amount}(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,_amount,0);
         }else{
            _aave.deposit(_token, _amount, 0);
-        } 
+        }  
     }
 
     function balanceOf(address _lpToken, address _account) internal view returns (uint) {

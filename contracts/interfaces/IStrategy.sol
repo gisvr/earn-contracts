@@ -13,10 +13,8 @@ pragma solidity ^0.6.0;
 
 
 interface IStrategy {
-    function deposit() external payable;
-    function withdraw(address) external;
+    function deposit() external payable; 
     function withdraw(uint) external;
     function withdrawAll() external returns (uint);
-    function balanceOf() external view returns (uint);
-    function harvest() external;// 收割
+    function balanceOf(address _want) external view returns (uint); 
 }

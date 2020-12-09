@@ -3,6 +3,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
@@ -16,7 +17,7 @@ import "./apr/interfaces/ICompound.sol";
 import "./lender/CompoundLib.sol";
 import "./lender/AaveLib.sol"; 
  
-contract StrategyLenderETH is IStrategy {
+contract StrategyLenderETH is Ownable,IStrategy {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
@@ -26,21 +27,23 @@ contract StrategyLenderETH is IStrategy {
     event Depoist(string name,address indexed lpAddres,uint256  balance);
 
     address public want;
-    address public governance;
-    address public controller;
-    address public strategist;
+    address public eth = address(0); 
+    address public controller; 
     address public apr; 
     ILenderAPR.Lender public recommend;
 
     //0x5f2F3eb6226BbB39D586dA2E449C0fc0d050Ac45
     //0x2e2C21EA07892F894b01918ef881214ff4aFBe37
     constructor (address _controller,address _apr) public {
-        want = address(0);
-        governance = msg.sender;
-        strategist = msg.sender;
+        want = eth; 
         controller = _controller;
         apr = _apr;
     } 
+    
+      function setWant(address _want) public onlyOwner{
+          withdrawAll(); // 准备切换资产
+          want = _want;
+      }
 
      function rebalance() public{
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
@@ -50,7 +53,7 @@ contract StrategyLenderETH is IStrategy {
 
         address _lender=address(recommend.lender);
         if(_recommend.lender != _lender){
-             withdrawAll(); // 移仓
+             withdrawAll(); // 准备移仓
              recommend = _recommend;
         }
      }
@@ -61,10 +64,9 @@ contract StrategyLenderETH is IStrategy {
         string memory _lenderName= recommend.name;
         uint256 _balance = msg.value;
         if(_balance==0){
-            _balance =  balance();
+            _balance =  balance(want);
         }
         if(_balance>0){
-            // 将合约的ERC20资产转入 LP 中，获得LP资产
            bytes32 name = keccak256(abi.encodePacked(_lenderName));
            bool isEth = true;
           
@@ -73,18 +75,17 @@ contract StrategyLenderETH is IStrategy {
                 address _lendpool = IAPR(_lender).getController(false);  
                
                 AaveLib.Aave memory _aave = AaveLib.Aave(_lendpool,_coreAddr);  
-                if(want != address(0)){
+                if(want != eth){ 
                     IERC20(want).safeIncreaseAllowance(_coreAddr, _balance);
                     isEth = false;
-                }
-               return _aave.suply(want,_balance,isEth); 
-                
+                } 
+               return _aave.suply(want,_balance,isEth);   
            }
 
            if (name == CompoundLib.Name) {
                //接受资产的合约地址
                  address _lpToken = IAPR(_lender).getLpToken(want);
-                 if(want != address(0)){ 
+                 if(want != eth){ 
                     IERC20(want).safeIncreaseAllowance(_lpToken, _balance);
                     isEth = false;
                  }
@@ -98,8 +99,8 @@ contract StrategyLenderETH is IStrategy {
 
      }
 
-     function balanceOf() override(IStrategy) public view returns (uint){
-        address _lpToken = IAPR(recommend.lender).getLpToken(want);
+     function balanceOf(address _want) override(IStrategy) public view returns (uint){
+        address _lpToken = IAPR(recommend.lender).getLpToken(_want);
         bytes32 _name = keccak256(abi.encodePacked(recommend.name));
          
         if (_name == AaveLib.Name) {
@@ -114,7 +115,7 @@ contract StrategyLenderETH is IStrategy {
      }
 
      function withdrawAll() override(IStrategy) public returns (uint){
-        uint256 _balance = balanceOf();
+        uint256 _balance = balanceOf(want);
         withdraw(_balance);
         return _balance;
      }
@@ -137,15 +138,15 @@ contract StrategyLenderETH is IStrategy {
         }
      }
 
-     function balance() public view returns (uint256) {
-         if(want == address(0)){
+     function balance(address _want) public view returns (uint256) {
+         if(_want == eth){
              return address(this).balance;
          }else{
-             return IERC20(want).balanceOf(address(this));
+             return IERC20(_want).balanceOf(address(this));
          } 
      }
  
-     function claimComp() public {
+     function claimComp() public  {
        address _lender=address(recommend.lender);
        string memory _lenderName= recommend.name;
        bytes32 _name = keccak256(abi.encodePacked(_lenderName));
@@ -155,7 +156,7 @@ contract StrategyLenderETH is IStrategy {
         }
      }
 
-     function compBalance() public view returns (uint256 ) {
+     function compBalance() public view  returns (uint256 ) {
        address _lender=address(recommend.lender);
        string memory _lenderName= recommend.name;
        bytes32 _name = keccak256(abi.encodePacked(_lenderName));
@@ -167,22 +168,15 @@ contract StrategyLenderETH is IStrategy {
         }
      }
 
-
-    function harvest() override(IStrategy) external {
-
-    }
-
-    function withdraw(address) override(IStrategy) external {
-
-    }
+ 
  
     // incase of half-way error
-    function inCaseTokenGetsStuck(IERC20 _TokenAddress)   public {
+    function inCaseTokenGetsStuck(IERC20 _TokenAddress)   public onlyOwner{
         uint qty = _TokenAddress.balanceOf(address(this));
         _TokenAddress.transfer(msg.sender, qty);
     }
     // incase of half-way error
-    function inCaseETHGetsStuck()   public {
+    function inCaseETHGetsStuck()   public  onlyOwner{
         uint256 _bal = address(this).balance;
         (bool result,) =  msg.sender.call{value:_bal}("");
         require(result, "transfer of ETH failed");

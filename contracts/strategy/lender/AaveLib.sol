@@ -15,17 +15,18 @@ library AaveLib {
  
     bytes32 internal constant Name = keccak256(abi.encodePacked("Aave"));
    
-    function suply(Aave memory aave,address _token,uint256 _amount) internal  {  
-        IAave  _aave = IAave(aave.lendingPool);
-        if(_token == address(0)){ 
-           _aave.deposit{value:msg.value}(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,msg.value,0);
+   function suply(Aave memory aave,address _token,uint256 _amount,bool isEth)  internal {  
+        IAave _aave = IAave(aave.lendingPool);
+        if(isEth){ 
+           _aave.deposit{value:_amount}(_token,_amount,0);
         }else{
            _aave.deposit(_token, _amount, 0);
         } 
     }
 
     function balanceOf(address _lpToken, address _account) internal view returns (uint) {
-        return IERC20(_lpToken).balanceOf(_account);  
+        // return IERC20(_lpToken).balanceOf(_account);  
+       return IAToken(_lpToken).balanceOf(_account);  
     }
 
     function withdraw(address _lpToken, uint256 _balance) internal  { 

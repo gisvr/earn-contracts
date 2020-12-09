@@ -58,7 +58,7 @@ contract StrategyLender is IStrategy {
         } 
      }
 
-     function deposit() public override(IStrategy){ 
+     function deposit() public override payable{ 
         rebalance();
         address _lender=address(recommend.lender);  
         string memory _lenderName= recommend.name; 

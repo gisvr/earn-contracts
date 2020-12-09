@@ -10,12 +10,14 @@ const mController = artifacts.require("mController");
 const LenderAPR = artifacts.require("LenderAPR");
 const StrategyLenderETH = artifacts.require("StrategyLenderETH");
 
-module.exports = async (deployer) => { 
+module.exports = async (deployer) => {
     let controller = await mController.deployed();
-    let lenderAPR = await LenderAPR.deployed(); 
+    let lenderAPR = await LenderAPR.deployed();
     await deployer.deploy(StrategyLenderETH,controller.address,lenderAPR.address);
     let strategy  = await StrategyLenderETH.deployed();
 
+    // let [ower, user1] = accounts
+
     // 设置 recommend
-    await strategy.deposit();
+    // await strategy.deposit();
 };

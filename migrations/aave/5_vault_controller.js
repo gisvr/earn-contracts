@@ -4,6 +4,7 @@
 
 const mController = artifacts.require("mController");
 
-module.exports = async (deployer) => { 
-    await deployer.deploy(mController,user1);
+module.exports = async(deployer, network, accounts)  => {
+    let [ower, user1] = accounts
+    await deployer.deploy(mController,user1,{from:user1});
 };

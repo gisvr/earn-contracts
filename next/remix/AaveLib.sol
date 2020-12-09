@@ -1,5 +1,6 @@
 pragma solidity >=0.6.0 <0.8.0;
 
+
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.3/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.3/contracts/token/ERC20/SafeERC20.sol";
 
@@ -23,10 +24,10 @@ library AaveLib {
  
     bytes32 internal constant Name = keccak256(abi.encodePacked("Aave"));
    
-    function suply(Aave memory aave,address _token,uint256 _amount)  internal {  
+    function suply(Aave memory aave,address _token,uint256 _amount,bool isEth)  internal {  
         IAave _aave = IAave(aave.lendingPool);
-        if(_token == address(0)){ 
-           _aave.deposit{value:_amount}(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,_amount,0);
+        if(isEth){ 
+           _aave.deposit{value:_amount}(_token,_amount,0);
         }else{
            _aave.deposit(_token, _amount, 0);
         } 
@@ -46,30 +47,42 @@ library AaveLib {
     }
 }
 
-contract StrategyLenderETH { 
+contract StrategyLenderAave { 
     using SafeERC20 for IERC20;
+    
+    using AaveLib for AaveLib.Aave;
     
     address lendingPool = 0x9E5C7835E4b13368fd628196C4f1c6cEc89673Fa;
     address core = 0x4295Ee704716950A4dE7438086d6f0FBC0BA9472;
     address ethAtoken = 0x2433A1b6FcF156956599280C3Eb1863247CFE675;
+    address aaveEth = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE; //0x0000000000000000000000000000000000000000
+    address aaveDai = 0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108; //underlying
     
     event log (string message);
     
-    
-    
-    
+     
     function suply() public {
         // address(this).transfer(msg.value);
         uint256 _bal = address(this).balance;
         AaveLib.Aave memory _aave = AaveLib.Aave(lendingPool,lendingPool);  
-        AaveLib.suply(_aave,address(0),_bal);  
+        // AaveLib.suply(_aave,aaveEth,_bal,true);  
+        return _aave.suply(aaveEth,_bal,true); 
     }
  
     
     function suplyETH() public payable{
-        address(this).transfer(msg.value);
+        // payable(this).transfer(msg.value); //?
         AaveLib.Aave memory _aave = AaveLib.Aave(lendingPool,lendingPool);  
-        AaveLib.suply(_aave,address(0),msg.value);  
+        // AaveLib.suply(_aave,aaveEth,msg.value,true);  
+        return _aave.suply(aaveEth,msg.value,true); 
+    }
+    
+    function suplyDAI(uint256 _balance) public  { 
+        AaveLib.Aave memory _aave = AaveLib.Aave(lendingPool,core);    
+        
+        IERC20(aaveDai).safeIncreaseAllowance(core, _balance); 
+        return _aave.suply(aaveDai,_balance,false); 
+         
     }
     
      event Received(address, uint);

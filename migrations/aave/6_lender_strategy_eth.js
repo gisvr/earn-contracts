@@ -8,13 +8,13 @@
 
 const mController = artifacts.require("mController");
 const LenderAPR = artifacts.require("LenderAPR");
-const StrategyLenderETH = artifacts.require("StrategyLenderETH");
+const StrategyLender = artifacts.require("StrategyLender");
 
 module.exports = async (deployer) => {
     let controller = await mController.deployed();
     let lenderAPR = await LenderAPR.deployed();
-    await deployer.deploy(StrategyLenderETH,controller.address,lenderAPR.address);
-    let strategy  = await StrategyLenderETH.deployed();
+    await deployer.deploy(StrategyLender,controller.address,lenderAPR.address);
+    let strategy  = await StrategyLender.deployed();
 
     // let [ower, user1] = accounts
 

@@ -45,7 +45,7 @@ describe('AaveAPR ropsten', async () => {
     }).timeout(50000)
 
     it("StrategyLender aave deposit ETH", async () => {
-        let strategyLender =await provider.getArttifact("StrategyLenderETH")
+        let strategyLender =await provider.getArttifact("StrategyLender")
         let tx = await strategyLender.deposit({from: user2,value:20})
         console.log(tx)
 
@@ -64,7 +64,7 @@ describe('AaveAPR ropsten', async () => {
         let tx1 = await erc20.transfer(strategy, "200", {from: user2})
         // console.log(tx1)
 
-        let strategyLender =await provider.getArttifact("StrategyLenderETH",false)
+        let strategyLender =await provider.getArttifact("StrategyLender",false)
         strategyLender = await strategyLender.at(strategy);
         let tx = await strategyLender.deposit({from: user2});
         console.log(tx)

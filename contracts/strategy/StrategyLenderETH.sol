@@ -62,15 +62,12 @@ contract StrategyLenderETH is IStrategy {
         uint256 _balance = msg.value;
         if(_balance==0){
             _balance =  balance();
-        }else{
-            if(want == address(0)){
-                payable(this).transfer(_balance); 
-            }
         }
         if(_balance>0){
             // 将合约的ERC20资产转入 LP 中，获得LP资产
            bytes32 name = keccak256(abi.encodePacked(_lenderName));
            bool isEth = true;
+          
            if (name == AaveLib.Name) {
                 address _coreAddr = IAPR(_lender).getController(true);
                 address _lendpool = IAPR(_lender).getController(false);  
@@ -86,7 +83,7 @@ contract StrategyLenderETH is IStrategy {
 
            if (name == CompoundLib.Name) {
                //接受资产的合约地址
-                address _lpToken = IAPR(_lender).getLpToken(want);
+                 address _lpToken = IAPR(_lender).getLpToken(want);
                  if(want != address(0)){ 
                     IERC20(want).safeIncreaseAllowance(_lpToken, _balance);
                     isEth = false;
@@ -127,9 +124,10 @@ contract StrategyLenderETH is IStrategy {
         string memory _lenderName= recommend.name;
 
         if(_balance>0){
-            address _lpToken = IAPR(_lender).getLpToken(want);
-            bytes32 _name = keccak256(abi.encodePacked(_lenderName));
+           address _lpToken = IAPR(_lender).getLpToken(want);
+           bytes32 _name = keccak256(abi.encodePacked(_lenderName));
            if (_name == AaveLib.Name) {
+            //   require(AaveLib.balanceOf(_lpToken,address(this))==0,"Aave: balance is 0");
                return AaveLib.withdraw(_lpToken,_balance); 
            }
 

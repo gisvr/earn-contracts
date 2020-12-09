@@ -17,8 +17,8 @@ library AaveLib {
    
    function suply(Aave memory aave,address _token,uint256 _amount,bool isEth)  internal {  
         IAave _aave = IAave(aave.lendingPool);
-        if(isEth){ 
-           _aave.deposit{value:_amount}(_token,_amount,0);
+        if(isEth){
+           _aave.deposit{value:_amount}(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE,_amount,0);
         }else{
            _aave.deposit(_token, _amount, 0);
         } 
@@ -30,7 +30,9 @@ library AaveLib {
     }
 
     function withdraw(address _lpToken, uint256 _balance) internal  { 
-        IAToken(_lpToken).redeem(_balance);
+        if(balanceOf(_lpToken,address(this))>0){
+          return IAToken(_lpToken).redeem(_balance);
+        } 
     }
  
 } 

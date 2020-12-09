@@ -168,6 +168,9 @@ contract StrategyLender is Ownable,IStrategy {
         }
      }
 
+    function withdraw(address) public override{
+
+    }
  
  
     // incase of half-way error

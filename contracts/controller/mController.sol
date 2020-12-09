@@ -138,7 +138,7 @@ contract mController {
     }
 
     function balanceOf(address _token) external view returns (uint) {
-        return IControllerStrategy(strategies[_token]).balanceOf();
+        return IControllerStrategy(strategies[_token]).balanceOf(_token);
     }
 
     function withdrawAll(address _token) public {

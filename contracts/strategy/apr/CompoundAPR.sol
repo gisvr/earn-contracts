@@ -51,13 +51,16 @@ contract CompoundAPR is Ownable,IAPR {
                }
             } 
         }
-        require(_lpToken != address(0),"LpToken don't exist!");
+        // require(_lpToken != address(0),"LpToken don't exist!");
         return _lpToken; 
     }
 
     // get APR 
     function getAPR(address _token) public override view returns (uint256) {
         address _lpToken =  getLpToken(_token);
+        if(_lpToken == address(0)){
+            return 0;
+        }
         //* @notice返回此cToken的当前每块供应利率
         //* @返回每块的供应利率，按1e18缩放
         return ICToken(_lpToken).supplyRatePerBlock().mul(blocksPerYear);

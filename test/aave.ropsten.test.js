@@ -44,11 +44,31 @@ describe('AaveAPR ropsten', async () => {
 
     }).timeout(50000)
 
-    it("StrategyLender aave deposit ETH", async () => { 
-        let strategyLender =await provider.getArttifact("StrategyLenderETH") 
+    it("StrategyLender aave deposit ETH", async () => {
+        let strategyLender =await provider.getArttifact("StrategyLenderETH")
         let tx = await strategyLender.deposit({from: user2,value:20})
         console.log(tx)
-        
+
+    }).timeout(500000)
+
+    it("StrategyLender aave deposit DAI", async () => {
+        let _token = aaveDai;
+        let accounts = provider.getAccounts()
+        let [ower, user1,user2] = provider.getAccounts()
+        let ERC20 = await provider.getArttifact("ERC20")
+        let erc20 = await ERC20.at(_token);
+
+        let strategy = "0xE4ABFe95469689aCe17c18FD59e4cbB8DC6abd61";
+        await erc20.approve(strategy, 18e18.toString(), {from: user2});
+
+        let tx1 = await erc20.transfer(strategy, "200", {from: user2})
+        // console.log(tx1)
+
+        let strategyLender =await provider.getArttifact("StrategyLenderETH",false)
+        strategyLender = await strategyLender.at(strategy);
+        let tx = await strategyLender.deposit({from: user2});
+        console.log(tx)
+
     }).timeout(500000)
 
     it("aave depoist ERC20", async () => {

@@ -19,12 +19,12 @@ const loader = setupLoader({
 }).truffle;
 
 module.exports = {
-    async getArttifact(name) {
+    async getArttifact(name,isAt=true) {
         let path = __dirname + "/../" + loader.artifactsDir + "/" + name + ".json";
         let contract = require(path);
         let arttifact   = loader.fromArtifact(name)
         arttifact.setWallet(web3.eth.accounts.wallet)
-        if (contract.networks[3]) {
+        if (contract.networks[3]&&isAt) {
             arttifact =await arttifact.at(contract.networks[3].address)
         }
 

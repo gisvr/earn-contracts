@@ -19,4 +19,13 @@ truffle develop
 truffle migrate --network ropsten --reset
 ```
 
+## 私有测试网络
+```
+    npm install --save-dev @nomiclabs/buidler
+    npm install --save-dev @nomiclabs/buidler-waffle
+    npm install --save-dev "@nomiclabs/buidler-ethers@^2.0.0"
+    npx buidler node
+
+```
+
 

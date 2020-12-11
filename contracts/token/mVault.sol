@@ -19,106 +19,63 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "../interfaces/IController.sol";
 
-contract mVault is ERC20 {
-    using SafeERC20 for IERC20;
-    using Address for address;
-    using SafeMath for uint256;
-
-    IERC20 public token;
-
-    uint public min = 10000;
-    uint public constant max = 10000;
-
-    address public governance;
+contract mVault {
+    using SafeERC20 for IERC20; 
+    using SafeMath for uint256; 
     address public controller;
-
-    // 根据支持的资产信息创建 vault, 
-    // 定义 contraller 通过 controller 操作strategy
-    // constructor (address _token, address _controller) public ERC20(
-    //     string(abi.encodePacked("mEarn ", ERC20(_token).name())),
-    //     string(abi.encodePacked("m", ERC20(_token).symbol()))
-    // ) {0xeA199722372dea9DF458dbb56be7721af117a9Bc //0xe1e1BbEAFA6540153db4F6570320c8F79e6136c3
-    constructor (address _controller,address _token) public ERC20(
-        string(abi.encodePacked("mEarn ", ERC20(_token).name())),
-        string(abi.encodePacked("m", ERC20(_token).symbol()))
-    ) { 
-       
-        token = IERC20(_token);
-         // 指定 vault的小数位 
-        _setupDecimals(ERC20(_token).decimals());
-        governance = msg.sender;
+    
+    function setController(address _controller) public   {
         controller = _controller;
-    }
-     
-    // 计算和vault 和 stragy 上的所有的 资产余额 
-    function balance() public view returns (uint) {
-        return token.balanceOf(address(this)) // 合约余额
-        .add(IController(controller).balanceOf(address(token))); // 策略余额
-    }
-
-    function setMin(uint _min) external {
-        require(msg.sender == governance, "!governance");
-        min = _min;
     }
  
-    function setController(address _controller) public {
-        require(msg.sender == governance, "!governance");
-        controller = _controller;
+     
+    // 计算和vault 和 stragy 上的所有的 资产余额 
+    function balanceAll(address _token) public view returns (uint) {
+        return IERC20(_token).balanceOf(address(this)) // 合约余额
+        .add(IController(controller).balanceOf(_token)); // 策略余额
     }
-
-    // Custom logic in here for how much the vault allows to be borrowed
-    // Sets minimum required on-hand to keep small withdrawals cheap
-    function available() public view returns (uint) {
-        return token.balanceOf(address(this)).mul(min).div(max);
+    
+    // 计算和vault 和 stragy 上的所有的 资产余额 
+    function balance(address _token) public view returns (uint) {
+        return IERC20(_token).balanceOf(address(this)); // 策略余额
     }
+ 
 
     // 发车
     // 1.将Vault可用的token资产转移到 controller
     // 2.通过contorller 操作 strategy。 earn token
     // 3. vault的 balance 为 0 可以进程充值
-    function earn() public {
-        uint _bal = available();
-        token.safeTransfer(controller, _bal);
-        IController(controller).earn(address(token), _bal);
+    function earn(address _token) public {
+        uint _bal = IERC20(_token).balanceOf(address(this)); 
+        IERC20(_token).safeTransfer(controller, _bal);
+        IController(controller).earn(_token, _bal);
     }
 
     // 1 将 vault 支持的token资产 充值到 vault
     // 2 按照充值给用户分配 share
-    function deposit(uint _amount) external {
-        uint _pool = balance();
-        // _pool == 0 异常 必须将 pool 清空
-        // require(_pool == 0, "!_pool = 0");
-        token.safeTransferFrom(msg.sender, address(this), _amount);
-        uint shares = 0;
-        if (_pool == 0) {
-            shares = _amount;
-        } else {
-            shares = (_amount.mul(totalSupply())).div(_pool);//
-        }
-        _mint(msg.sender, shares);
-        //  earn();
+    function deposit(address _token,uint _amount) external {  
+         IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
+    }
+    
+    function approve(address _token,address _app) external { 
+         IERC20(_token).safeIncreaseAllowance(_app, 10000); 
     }
 
     // No rebalance implementation for lower fees and faster swaps
-    function withdraw(uint _shares) external {
-        uint r = (balance().mul(_shares)).div(totalSupply());
-        _burn(msg.sender, _shares);
-
-        // Check balance
-        uint b = token.balanceOf(address(this));
-        if (b < r) {
-            uint _withdraw = r.sub(b);
-            IController(controller).withdraw(address(token), _withdraw);
-            uint _after = token.balanceOf(address(this));
-            uint _diff = _after.sub(b);
-            if (_diff < _withdraw) {
-                r = b.add(_diff);
-            }
-        } 
-        token.safeTransfer(msg.sender, r);
+    function withdraw(address _token,uint _amount) external {  
+        IController(controller).withdraw(_token, _amount); 
     }
-
-    function getPricePerFullShare() public view returns (uint) {
-        return balance().mul(1e18).div(totalSupply());
+    
+    // incase of half-way error
+    function inCaseTokenGetsStuck(IERC20 _TokenAddress) public {
+        uint qty = _TokenAddress.balanceOf(address(this));
+        _TokenAddress.transfer(msg.sender, qty);
     }
+    // incase of half-way error
+    function inCaseETHGetsStuck()   public  {
+        uint256 _bal = address(this).balance;
+        (bool result,) =  msg.sender.call{value:_bal}("");
+        require(result, "transfer of ETH failed");
+    }
+ 
 }

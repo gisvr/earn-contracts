@@ -9,11 +9,11 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "../interfaces/IStrategy.sol";
 import "../interfaces/ILenderAPR.sol";
-
-import "./lender/interfaces/ICompound.sol";
-import "./lender/interfaces/IAave.sol";
+import "../interfaces/IController.sol";
+ 
 import "./apr/interfaces/IAPR.sol";
 import "./apr/interfaces/ICompound.sol";
+
 import "./lender/CompoundLib.sol";
 import "./lender/AaveLib.sol"; 
  
@@ -34,8 +34,8 @@ contract StrategyLender is Ownable,IStrategy {
 
     //0x5f2F3eb6226BbB39D586dA2E449C0fc0d050Ac45
     //0x2e2C21EA07892F894b01918ef881214ff4aFBe37
-    constructor (address _controller,address _apr) public {
-        want = eth; 
+    constructor (address _controller,address _want,address _apr) public {
+        want = _want; 
         controller = _controller;
         apr = _apr;
     } 
@@ -45,7 +45,7 @@ contract StrategyLender is Ownable,IStrategy {
           want = _want;
       }
 
-     function rebalance() public{
+     function rebalance() internal{
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
         if(recommend.apr==0){
             recommend = _recommend;
@@ -129,13 +129,14 @@ contract StrategyLender is Ownable,IStrategy {
            bytes32 _name = keccak256(abi.encodePacked(_lenderName));
            if (_name == AaveLib.Name) {
             //   require(AaveLib.balanceOf(_lpToken,address(this))==0,"Aave: balance is 0");
-               return AaveLib.withdraw(_lpToken,_balance); 
+                 AaveLib.withdraw(_lpToken,_balance); 
            }
 
            if (_name == CompoundLib.Name) { 
-               return CompoundLib.withdrawSome(_lpToken,_balance); 
+                 CompoundLib.withdrawSome(_lpToken,_balance); 
            }
-        }
+        } 
+        IERC20(want).safeTransfer(IController(controller).vault(), _balance);
      }
 
      function balance(address _want) public view returns (uint256) {
@@ -167,11 +168,6 @@ contract StrategyLender is Ownable,IStrategy {
             return 0;
         }
      }
-
-    function withdraw(address) public override{
-
-    }
- 
  
     // incase of half-way error
     function inCaseTokenGetsStuck(IERC20 _TokenAddress)   public onlyOwner{

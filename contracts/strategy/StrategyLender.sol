@@ -52,8 +52,8 @@ contract StrategyLender is Ownable,IStrategy {
         }
 
         address _lender=address(recommend.lender);
-        if(_recommend.lender != _lender){
-             withdrawAll(); // 准备移仓
+        if(_recommend.lender != _lender){ 
+             _redeem(balanceOf(want));//赎回所有资产
              recommend = _recommend;
         }
      }
@@ -119,8 +119,8 @@ contract StrategyLender is Ownable,IStrategy {
         withdraw(_balance);
         return _balance;
      }
-
-     function withdraw(uint256 _balance) public override(IStrategy) {
+      
+     function _redeem(uint256 _balance) internal  { 
         address _lender=address(recommend.lender);
         string memory _lenderName= recommend.name;
 
@@ -136,6 +136,10 @@ contract StrategyLender is Ownable,IStrategy {
                  CompoundLib.withdrawSome(_lpToken,_balance); 
            }
         } 
+      }
+
+     function withdraw(uint256 _balance) public override(IStrategy) {
+        _redeem(_balance);
         IERC20(want).safeTransfer(IController(controller).vault(), _balance);
      }
 

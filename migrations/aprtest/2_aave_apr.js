@@ -13,14 +13,18 @@ module.exports = async (deployer,network, accounts) => {
         aaveProvider = "0x1c8756FD2B28e9426CDBDcC7E3c4d64fa9A54728"
     }
     if (network == "development") {
-        aaveProvider = "0x24E420B42971372F060a93129846761F354Bc50B"
+        aaveProvider = "0xCfEB869F69431e42cdB54A4F4f105C19C080A601"
     }
-    
+
     await deployer.deploy(AaveAPR,aaveProvider,{from:user1});
 
-    let aaveDai = "0xA8083d78B6ABC328b4d3B714F76F384eCC7147e1"; 
-    let aaveUsdt = "0xB7b9568073C9e745acD84eEb30F1c32F74Ba4946"; 
-    
+    //  '0x7C728214be9A0049e6a86f2137ec61030D0AA964',
+    //   '0x86072CbFF48dA3C1F01824a6761A03F105BCC697',
+    //   '0xA586074FA4Fe3E546A132a16238abe37951D41fE',
+    //   '0x970e8f18ebfEa0B08810f33a5A40438b9530FBCF'
+    let aaveDai = "0x7C728214be9A0049e6a86f2137ec61030D0AA964";
+    let aaveBat = "0x86072CbFF48dA3C1F01824a6761A03F105BCC697";
+
     let lenderAPR = await AaveAPR.deployed();
     let tokenApr = await lenderAPR.getAPR(aaveDai);
     console.log("AaveAPR aaveDai", tokenApr.toString());

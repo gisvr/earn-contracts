@@ -10,15 +10,15 @@ const LenderAPR = artifacts.require("LenderAPR");
 module.exports = async (deployer, network, accounts) => {
     let [ower, user1] = accounts
     await deployer.deploy(LenderAPR,{from:user1});
-    let aaveAPR = await AaveAPR.deployed();  //0x9a16Bf8B4a0B83a8e9c6126c5595Ad81f772c5F8
-    let lenderAPR = await LenderAPR.deployed(); // 0xaF27479F1682d323Af2a030a9bBdCf7c8EA8Ca21
- 
-    await lenderAPR.addLender("Aave", aaveAPR.address,{from:user1}); 
+    let aaveAPR = await AaveAPR.deployed();  //
+    let lenderAPR = await LenderAPR.deployed(); //  0xB3a1aa50bA2826d55bb53b9367EeD3F444f0e493
 
-    let aaveDai = "0xA8083d78B6ABC328b4d3B714F76F384eCC7147e1"; 
-    let aaveUsdt = "0xB7b9568073C9e745acD84eEb30F1c32F74Ba4946"; 
-    let foo1 = await lenderAPR.recommend(aaveUsdt);
+    await lenderAPR.addLender("Aave", aaveAPR.address,{from:user1});
+
+    let aaveDai = "0x7C728214be9A0049e6a86f2137ec61030D0AA964";
+    let aaveUsdc = "0xA586074FA4Fe3E546A132a16238abe37951D41fE";
+    let foo1 = await lenderAPR.recommend(aaveUsdc);
     console.log("lenderAPR",foo1.lender);
     console.log("lenderAPR",foo1.name);
-    console.log("lenderAPR",foo1.apr.toString()); 
+    console.log("lenderAPR",foo1.apr.toString());
 };

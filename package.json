@@ -31,7 +31,7 @@
   "scripts": {
     "init": "npx oz init",
     "cli": "npx buidler node",
-    "compile": "npx oz compile",
+    "compile": "npx truffle compile",
     "deploy": "npx oz deploy",
     "upgrade": "npx oz upgrade",
     "send": "npx oz send-tx",

@@ -1,3 +1,20 @@
+## 合约地址
+gancahe 1
+```js
+// Dai
+0x7C728214be9A0049e6a86f2137ec61030D0AA964
+
+
+// mController
+0x5568CA4C8fc2ACd7D3f814A03a54A84Af9167CbC > zhl
+0xaE96738db1879c99Ebe8197Bb947EdBA4FE07d09 > liyu
+
+// vault proxy address
+0x9506b892fF641B0Cf3EaC5d5fe24AC8829CA3343 > liyu
+```
+
+
+
 ## 快速调试
 1. 先在根目录下运行 ` remixd -s ./`
 > remixd -s ./ --remix-ide https://remix.ethereum.org/
@@ -28,7 +45,6 @@ truffle migrate --network ropsten --reset
 --debug
 
     npx ganache-cli -h 0.0.0.0 -p 8545  --deterministic --gasPrice 5e9 --gasLimit 20000000 -e 10000 --networkId 1337 --db ./ganache > gan.log & 
-//          13704
 
 ```
 
@@ -50,6 +66,20 @@ node 大于  12.0版本
 
 
     tail -f node.log
+```
+
+PM2 ecosystem.config.js 配置
+> pm2 ecosystem
+```js
+{
+  apps : [{
+    name: "ganache",
+    script: "/usr/local/node/bin/ganache-cli",
+    error_file:"./logs/app-err.log",
+    out_file: "./logs/app-out.log", 
+    args:"-h 0.0.0.0 -p 8555  --deterministic --gasPrice 5e9 --gasLimit 20000000 -e 10000 --networkId 1338 --db ./ganache"
+  }]
+}
 ```
 
 

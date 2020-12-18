@@ -120,7 +120,7 @@ contract StrategyLender is Ownable,IStrategy {
         return _balance;
      }
       
-     function _redeem(uint256 _balance) internal  { 
+     function _redeem(uint256 _balance) internal returns (uint256 _bal)  { 
         address _lender=address(recommend.lender);
         string memory _lenderName= recommend.name;
 
@@ -129,18 +129,17 @@ contract StrategyLender is Ownable,IStrategy {
            bytes32 _name = keccak256(abi.encodePacked(_lenderName));
            if (_name == AaveLib.Name) {
             //   require(AaveLib.balanceOf(_lpToken,address(this))==0,"Aave: balance is 0");
-                 AaveLib.withdraw(_lpToken,_balance); 
+               _bal =  AaveLib.withdraw(_lpToken,_balance); 
            }
 
            if (_name == CompoundLib.Name) { 
-                 CompoundLib.withdrawSome(_lpToken,_balance); 
+                _bal = CompoundLib.withdrawSome(_lpToken,_balance); 
            }
         } 
       }
 
-     function withdraw(uint256 _balance) public override(IStrategy) {
-        _redeem(_balance);
-        IERC20(want).safeTransfer(IController(controller).vault(), _balance);
+     function withdraw(uint256 _balance) public override(IStrategy) { 
+        IERC20(want).safeTransfer(IController(controller).vault(), _redeem(_balance));
      }
 
      function balance(address _want) public view returns (uint256) {

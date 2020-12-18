@@ -29,9 +29,14 @@ library AaveLib {
        return IAToken(_lpToken).balanceOf(_account);  
     }
 
-    function withdraw(address _lpToken, uint256 _balance) internal  { 
-        if(balanceOf(_lpToken,address(this))>0){
-          return IAToken(_lpToken).redeem(_balance);
+    function withdraw(address _lpToken, uint256 _balance) internal  returns (uint256) { 
+        uint256 _balAll = balanceOf(_lpToken,address(this));
+        if(_balAll>0){ 
+          uint256 _bal = IAToken(_lpToken).principalBalanceOf(address(this));
+          _bal = _balAll.sub(_bal).mul(_balance).div(_bal).add(_balance);
+          require(_bal>=_balance,"principalBalanceOf error");
+          IAToken(_lpToken).redeem(_bal);
+          return _bal;
         } 
     }
  

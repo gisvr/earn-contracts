@@ -41,10 +41,11 @@ library CompoundLib {
     }
 
     //  按照 asset 的余额提现
-    function withdrawSome(address _lpToken, uint256 _amount) internal  {
+    function withdrawSome(address _lpToken, uint256 _amount) internal returns (uint256)  {
       _amount = _amount.mul(1e18).div(ICompound(_lpToken).exchangeRateStored()); 
       if(_amount >0){
          withdraw(_lpToken,_amount);
+         return _amount;
       } 
     }
  

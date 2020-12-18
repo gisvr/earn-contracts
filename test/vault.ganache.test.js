@@ -3,7 +3,7 @@ let provider = require("../utils/ganache.provider")
 let zrx = "0xFD13958386b6AC7d3FEdb310A766ca2008d840Bf" // underlying aaveDai
 // let aaveDai = "0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108" //underlying
 
-describe('AaveAPR ganache', async () => {
+describe('mVault ganache', async () => {
     let ower, user1;
     beforeEach( async()=>{
         this.ERC20 =await provider.getArttifact("ERC20");
@@ -18,8 +18,7 @@ describe('AaveAPR ganache', async () => {
         let erc20 = await this.ERC20.at(zrx)
         await erc20.approve(mVault.address, 18e18.toString(), {from: user1});
         let recommend = await mVault.deposit(zrx,2e18.toString(), {from: user1});
-        console.log(recommend)
-        //https://ropsten.etherscan.io/tx/0x941fc8710f716596a20b68a4c486ae474c49e5846e213101ffc5f64a18196931
+        console.log(recommend) 
     }).timeout(500000)
 
 

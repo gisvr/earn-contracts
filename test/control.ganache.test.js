@@ -1,7 +1,7 @@
 let provider = require("../utils/ganache.provider")
 let aaveDai = "0x7C728214be9A0049e6a86f2137ec61030D0AA964" //underlying
 
-describe('AaveAPR ropsten', async () => {
+describe('mController ropsten', async () => {
     let owner, user1;
     beforeEach( async()=>{
         let TokenDAI = await provider.getAave("MockDAI");
@@ -13,28 +13,35 @@ describe('AaveAPR ropsten', async () => {
 
     })
 
+    it("mController setVault", async () => { 
+        let controller = "0xF21f6b110647526b19E729c1D1354CD156eaC6A4"
+        let tx =await this.mController.setVault(controller);
+        console.log("setVault",tx);
+    }).timeout(500000)
+
 
 
     it("mController erc20 balanceOf", async () => {
         let erc20 = await this.ERC20.at(aaveDai)
 
         let mVaultBal = await erc20.balanceOf(this.mController.address);
-        console.log("mControllerBall",mVaultBal.toString());
+        console.log("mController balance",mVaultBal.toString());
 
         let strategyBal = await erc20.balanceOf(this.StrategyLender.address);
-        console.log("strategyBal",strategyBal.toString());
+        console.log("strategy balance",strategyBal.toString());
 
         let user1tBal = await erc20.balanceOf(owner);
-        console.log("user1tBal",user1tBal.toString());
+        console.log("owner balance",user1tBal.toString());
 
     }).timeout(500000)
 
     it("mController balanceOf", async () => {
-        let mController = this.mController;
-
+        let mController = this.mController; 
         let foo2 =await mController.balanceOf(aaveDai);
-        console.log("mController all",foo2.toString());
+        console.log("mController balanceOf",foo2.toString());
     }).timeout(500000)
+
+   
 
 
 

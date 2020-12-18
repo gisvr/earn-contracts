@@ -1,4 +1,4 @@
-let provider = require("../utils/provider")
+let provider = require("../../utils/provider")
 let aaveDai = "0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108" //underlying
 let aaveETH = "0x2433A1b6FcF156956599280C3Eb1863247CFE675" //atoken
 

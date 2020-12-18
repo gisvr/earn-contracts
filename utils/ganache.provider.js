@@ -26,22 +26,8 @@ let getArttifact = async (name,account,path,isAt) =>{
 module.exports = {
     async getArttifact(name,isAt=true) {
         accounts = await web3.eth.getAccounts();
-        const loader = setupLoader({
-            defaultSender: accounts[0].address,
-            provider: web3.currentProvider,
-            defaultGas: 2e6,
-            defaultGasPrice: 6e9,
-        }).truffle;
-
-        let path = __dirname + "/../" + loader.artifactsDir + "/" + name + ".json";
-        let contract = require(path);
-        let arttifact   = loader.fromArtifact(name)
-        arttifact.setWallet(web3.eth.accounts.wallet)
-        let _chainId = await web3.eth.getChainId();
-        if (contract.networks[_chainId]&&isAt) {
-            arttifact =await arttifact.at(contract.networks[_chainId].address)
-        }
-        return arttifact;
+        let path = "/Users/liyu/github/mars/earn-contracts/build/contracts/" + name + ".json";
+        return getArttifact(name,accounts[0],path,isAt);
     },
     async getAave(name,isAt=true){
         accounts = await web3.eth.getAccounts();

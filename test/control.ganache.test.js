@@ -4,6 +4,8 @@ let aaveDai = "0x7C728214be9A0049e6a86f2137ec61030D0AA964" //underlying
 describe('AaveAPR ropsten', async () => {
     let owner, user1;
     beforeEach( async()=>{
+        let TokenDAI = await provider.getAave("MockDAI");
+        aaveDai = TokenDAI.address;
         this.ERC20 =await provider.getArttifact("ERC20");
         this.mController =await provider.getArttifact("mController");
         this.StrategyLender =await provider.getArttifact("StrategyLender");
@@ -11,14 +13,6 @@ describe('AaveAPR ropsten', async () => {
 
     })
 
-    it("mController deposit erc20", async () => {
-        let mController = this.mController;
-        let erc20 = await this.ERC20.at(aaveDai)
-        await erc20.approve(mController.address, 18e18.toString(), {from: user1});
-        let recommend = await mController.deposit(2e18.toString(), {from: user1});
-        console.log(recommend)
-        //https://ropsten.etherscan.io/tx/0x941fc8710f716596a20b68a4c486ae474c49e5846e213101ffc5f64a18196931
-    }).timeout(500000)
 
 
     it("mController erc20 balanceOf", async () => {

@@ -1,0 +1,97 @@
+
+Compiling your contracts...
+===========================
+> Everything is up to date, there is nothing to compile.
+
+
+
+Starting migrations...
+======================
+> Network name:    'development'
+> Network id:      1337
+> Block gas limit: 20000000 (0x1312d00)
+
+
+1_initial_migration.js
+======================
+0x75b25C47D9F4a7196ef37ed1175f69C5f6840447
+
+   Replacing 'Migrations'
+   ----------------------
+   > transaction hash:    0x5e77df8570e602dddad6664ec49e8e984f4e863f2cbea45e251b341ab086eebf
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x58bc0AaC9359fBdc66aD0B07bdE74E5ACc37cF43
+   > block number:        4760
+   > block timestamp:     1609919714
+   > account:             0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0
+   > balance:             10018.084882916148937893
+   > gas used:            239500 (0x3a78c)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00479 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:             0.00479 ETH
+
+
+2_aave_apr.js
+=============
+
+   Replacing 'AaveAPR'
+   -------------------
+   > transaction hash:    0xe4f860b54763caf5002d973b660c81675b13ec7e3ead07797d77fbb07450b54e
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x0498DA021B60ce8466f7345F6362104befe2DEc4
+   > block number:        4762
+   > block timestamp:     1609919714
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9956.4160955212
+   > gas used:            909143 (0xddf57)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.01818286 ETH
+
+AaveAPR aaveDai 452762755297641, aaveEth 13897836647916057
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.01818286 ETH
+
+
+4_lender_apr.js
+===============
+
+   Replacing 'LenderAPR'
+   ---------------------
+   > transaction hash:    0x4ca172a139e7da174496dee945130e84da584538eb275df1deeb33964b8fe008
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x9CF02fe412cF813c8fE55c17B39B43626250D295
+   > block number:        4764
+   > block timestamp:     1609919716
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9956.3984459212
+   > gas used:            860223 (0xd203f)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.01720446 ETH
+
+lenderAPR 0x0498DA021B60ce8466f7345F6362104befe2DEc4
+lenderAPR Aave
+lenderAPR 452762755297641
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.01720446 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          0.04017732 ETH
+
+

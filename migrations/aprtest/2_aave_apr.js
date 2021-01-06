@@ -19,11 +19,13 @@ module.exports = async (deployer,network, accounts) => {
     await deployer.deploy(AaveAPR,aaveProvider);
 
     let _dai = await nodeProvider.getAave("MockDAI");
-    let aaveDai = _dai.address;
-    // let aaveDai = "0x7C728214be9A0049e6a86f2137ec61030D0AA964";
-    // let aaveBat = "0x86072CbFF48dA3C1F01824a6761A03F105BCC697";
+    let zeroAddr = "0x0000000000000000000000000000000000000000"; 
+    let aaveDai = _dai.address; 
 
     let lenderAPR = await AaveAPR.deployed();
     let tokenApr = await lenderAPR.getAPR(aaveDai);
-    console.log("AaveAPR aaveDai", tokenApr.toString());
+    ethApr = await lenderAPR.getAPR(zeroAddr);
+    console.log("AaveAPR aaveDai %s, aaveEth %s", tokenApr.toString(),ethApr.toString());
+
+   
 };

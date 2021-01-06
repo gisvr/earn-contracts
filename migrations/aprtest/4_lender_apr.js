@@ -11,7 +11,7 @@ module.exports = async (deployer, network, accounts) => {
     let [ower, user1] = accounts
     await deployer.deploy(LenderAPR);
     let aaveAPR = await AaveAPR.deployed();  //
-    let lenderAPR = await LenderAPR.deployed(); //  0xB3a1aa50bA2826d55bb53b9367EeD3F444f0e493
+    let lenderAPR = await LenderAPR.deployed(); //  
 
     await lenderAPR.addLender("Aave", aaveAPR.address);
 

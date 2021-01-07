@@ -13,6 +13,7 @@ contract CompoundAPR is Ownable, IAPR {
     uint256 public blocksPerYear = 2102400; // 1 year/ 15 seconds for per block = 31536000/15
     string public lenderName = "Compound";
     address public Compound;
+    address eth =  0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address lpETH = 0xBe839b6D93E3eA47eFFcCA1F27841C917a8794f3; // ropsten
 
     constructor(address _comptroller) public {
@@ -37,7 +38,7 @@ contract CompoundAPR is Ownable, IAPR {
     }
 
     function getLpToken(address _token) public view override returns (address) {
-        address _lpToken = address(0);
+        address _lpToken = eth;
         if (_token == _lpToken) {
             return lpETH;
         }
@@ -57,11 +58,9 @@ contract CompoundAPR is Ownable, IAPR {
 
     function getAPR(address _token) public view override returns (uint256) {
         address _lpToken = getLpToken(_token);
-        if (_lpToken == address(0)) {
+        if (_lpToken == eth) {
             return 0;
         }
-        //* @notice返回此cToken的当前每块供应利率
-        //* @返回每块的供应利率，按1e18缩放
         return ICToken(_lpToken).supplyRatePerBlock().mul(blocksPerYear);
     }
 
@@ -73,23 +72,12 @@ contract CompoundAPR is Ownable, IAPR {
     {
         address _lpToken = getLpToken(_token);
         ICToken c = ICToken(_lpToken);
-        //* @notice返回此cToken的当前每块供应利率
-        //* @返回每块的供应利率，按1e18缩放
         address _model = ICToken(_token).interestRateModel();
-        if (_model == address(0)) {
-            return c.supplyRatePerBlock().mul(2102400);
+        if (_model == eth) {
+            return c.supplyRatePerBlock().mul(blocksPerYear);
         }
         IInterestRateModel i = IInterestRateModel(_model);
-        //* @notice将此cToken的现金余额计入标的资产
-        //* @返还本合同所拥有的标的资产数量
         uint256 cashPrior = c.getCash().add(_supply);
-
-        //* @notice计算每段现时的供应利率
-        //* @param现金市场拥有的现金总额
-        //* @param借款市场上未偿还的借款总额
-        //* @param储备金市场拥有的储备金总额
-        //* @param储备因数是市场现有的储备因数
-        //* @返回每个区块的供货率(以百分比表示，按1e18缩放)
         return
             i
                 .getSupplyRate(

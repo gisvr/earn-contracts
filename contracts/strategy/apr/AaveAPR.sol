@@ -9,8 +9,7 @@ import "./interfaces/IAPR.sol";
 contract AaveAPR is Ownable, IAPR {
     using SafeMath for uint256;
     address public Aave;
-    string public lenderName = "Aave";
-    address aETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    string public lenderName = "Aave"; 
 
     constructor(address _provider) public {
         Aave = _provider;
@@ -19,11 +18,7 @@ contract AaveAPR is Ownable, IAPR {
     function initialize(address _addressesProvider) public onlyOwner {
         Aave = _addressesProvider;
     }
-
-    function setETH(address _ETH) public onlyOwner {
-        aETH = _ETH;
-    }
-
+ 
     function setAave(address _provider) public onlyOwner {
         Aave = _provider;
     }
@@ -49,13 +44,11 @@ contract AaveAPR is Ownable, IAPR {
         return lenderName;
     }
 
-    function getLpToken(address _token) public view override returns (address) {
-        _token == address(0) ? aETH : _token;
+    function getLpToken(address _token) public view override returns (address) { 
         return ILendingPoolCore(getAaveCore()).getReserveATokenAddress(_token);
     }
 
-    function getAPR(address _token) public view override returns (uint256) {
-        _token == address(0) ? aETH : _token;
+    function getAPR(address _token) public view override returns (uint256) { 
         return
             ILendingPoolCore(getAaveCore())
                 .getReserveCurrentLiquidityRate(_token)
@@ -67,8 +60,7 @@ contract AaveAPR is Ownable, IAPR {
         view
         override
         returns (uint256)
-    {
-        _token == address(0) ? aETH : _token;
+    { 
         ILendingPoolCore core = ILendingPoolCore(getAaveCore());
         IReserveInterestRateStrategy apr =
             IReserveInterestRateStrategy(

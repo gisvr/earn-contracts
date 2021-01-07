@@ -14,6 +14,12 @@ contract EarnController is Ownable, IController {
     address public vault;
     mapping(address => address) public strategies;
 
+ 
+    modifier onlyVault() {
+        require(msg.sender == vault, "Ownable: caller is not the vault");
+        _;
+    }
+
     constructor(address _vault) public {
         vault = _vault;
     }
@@ -34,18 +40,16 @@ contract EarnController is Ownable, IController {
         strategies[_token] = _strategy;
     }
 
-    function earn(address _token, uint256 _amount) public override {
-        require(msg.sender == vault, "!vault");
+    function earn(address _token, uint256 _amount) public override onlyVault {
         address strategy = strategies[_token];
         address want = IStrategy(strategy).getWant();
         require(want == _token, "strategy want not equal token");
-        if(want == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE){
+        if (want == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) {
             IStrategy(strategy).deposit{value: _amount}();
-        }else{
+        } else {
             IERC20(want).safeTransfer(strategy, _amount);
             IStrategy(strategy).deposit();
         }
-        
     }
 
     function balanceOf(address _token)
@@ -57,8 +61,11 @@ contract EarnController is Ownable, IController {
         return IStrategy(strategies[_token]).balanceOf(_token);
     }
 
-    function withdraw(address _token, uint256 _amount) public override {
-        require(msg.sender == vault, "!vault");
+    function withdraw(address _token, uint256 _amount)
+        public
+        override
+        onlyVault
+    {
         IStrategy(strategies[_token]).withdraw(_amount);
     }
 

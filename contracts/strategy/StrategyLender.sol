@@ -26,7 +26,7 @@ contract StrategyLender is Ownable, IStrategy {
     event Depoist(string name, address indexed lpAddres, uint256 balance);
 
     address public want;
-    address public eth = address(0);
+    address public eth = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE; // { address(0);
     address public controller;
     address public apr;
     ILenderAPR.Lender public recommend;
@@ -41,15 +41,18 @@ contract StrategyLender is Ownable, IStrategy {
         apr = _apr;
     }
 
-    function setWant(address _want) public onlyOwner {
-        withdrawAll();
-        want = _want;
+    modifier onlyController() {
+        require(
+            msg.sender == controller,
+            "Ownable: caller is not the controller"
+        );
+        _;
     }
 
-     function getWant() external view  override returns(address) {
-         return want;
-     }
- 
+    function getWant() external view override returns (address) {
+        return want;
+    }
+
     function rebalance() internal {
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
         if (recommend.apr == 0) {
@@ -63,7 +66,7 @@ contract StrategyLender is Ownable, IStrategy {
         }
     }
 
-    function deposit() public payable override {
+    function deposit() public payable override onlyController {
         rebalance();
         address _lender = address(recommend.lender);
         string memory _lenderName = recommend.name;
@@ -121,13 +124,22 @@ contract StrategyLender is Ownable, IStrategy {
         return IERC20(_lpToken).balanceOf(address(this));
     }
 
-    function withdrawAll() public override(IStrategy) returns (uint256) {
+    function withdrawAll()
+        public
+        override(IStrategy)
+        onlyController
+        returns (uint256)
+    {
         uint256 _balance = balanceOf(want);
         withdraw(_balance);
         return _balance;
     }
 
-    function withdraw(uint256 _balance) public override(IStrategy) {
+    function withdraw(uint256 _balance)
+        public
+        override(IStrategy)
+        onlyController
+    {
         IERC20(want).safeTransfer(
             IController(controller).getVault(),
             _redeem(_balance)

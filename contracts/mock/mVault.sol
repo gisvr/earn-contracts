@@ -29,33 +29,32 @@ contract mVault {
     }
 
     function earn(address _token) public {
-        uint256 _bal = IERC20(_token).balanceOf(address(this));
-        IERC20(_token).safeTransfer(controller, _bal);
-        IController(controller).earn(_token, _bal);
+        uint256 bal = address(this).balance;
+        if(_token == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE){ 
+             (bool result, ) = address(controller).call{value: bal}("");
+             require(result, "transfer of ETH failed");
+        }else{
+             bal = IERC20(_token).balanceOf(address(this));
+             IERC20(_token).safeTransfer(controller, bal);
+        } 
+        IController(controller).earn(_token, bal);
     }
 
-    function deposit(address _token, uint256 _amount) external {
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
-    }
-
-    function approve(address _token, address _app) external {
-        IERC20(_token).safeIncreaseAllowance(_app, 10000);
-    }
-
+    receive() external payable {}
+ 
     function withdraw(address _token, uint256 _amount) external {
         IController(controller).withdraw(_token, _amount);
     }
 
-    // incase of half-way error
-    function inCaseTokenGetsStuck(IERC20 _TokenAddress) public {
-        uint256 qty = _TokenAddress.balanceOf(address(this));
-        _TokenAddress.transfer(msg.sender, qty);
+
+    function inCaseTokenGetsStuck(IERC20 _tokenAddress) public {
+        uint256 qty = _tokenAddress.balanceOf(address(this));
+        _tokenAddress.transfer(msg.sender, qty);
     }
 
-    // incase of half-way error
-    function inCaseETHGetsStuck() public {
-        uint256 _bal = address(this).balance;
-        (bool result, ) = msg.sender.call{value: _bal}("");
+    function inCaseETHGetsStuck() public  {
+        uint256 bal = address(this).balance;
+        (bool result, ) = msg.sender.call{value: bal}("");
         require(result, "transfer of ETH failed");
     }
 }

@@ -32,8 +32,8 @@ contract StrategyLender is Ownable, IStrategy {
     ILenderAPR.Lender public recommend;
 
     constructor(
-        address _controller,
         address _want,
+        address _controller,
         address _apr
     ) public {
         want = _want;
@@ -56,13 +56,13 @@ contract StrategyLender is Ownable, IStrategy {
     function _rebalance() internal {
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
         // TODO del want token not supported strategy
-        // if (recommend.apr == 0) {
-        //     recommend = _recommend;
-        // }
+        if (recommend.apr == 0) {
+            recommend = _recommend;
+        }
 
         address _lender = address(recommend.lender);
         if (_recommend.lender != _lender) {
-            _redeem(balanceOf(want)); //赎回所有资产
+            // _redeem(balanceOf(want)); //赎回所有资产
             recommend = _recommend;
         }
     }
@@ -116,7 +116,7 @@ contract StrategyLender is Ownable, IStrategy {
 
         if (_name == AaveLib.Name) {
             return AaveLib.balanceOf(_lpToken, address(this));
-        } 
+        }
 
         if (_name == CompoundLib.Name) {
             return CompoundLib.balanceOf(_lpToken, address(this));
@@ -153,18 +153,18 @@ contract StrategyLender is Ownable, IStrategy {
     }
 
     function _redeem(uint256 _balance) internal returns (uint256 _bal) {
-        address _lender = address(recommend.lender);
-        string memory _lenderName = recommend.name;
+        address lender = address(recommend.lender);
+        string memory lenderName = recommend.name;
 
         if (_balance > 0) {
-            address _lpToken = IAPR(_lender).getLpToken(want);
-            bytes32 _name = keccak256(abi.encodePacked(_lenderName));
-            if (_name == AaveLib.Name) {
-                _bal = AaveLib.withdraw(_lpToken, _balance);
+            address lpToken = IAPR(lender).getLpToken(want);
+            bytes32 name = keccak256(abi.encodePacked(lenderName));
+            if (name == AaveLib.Name) {
+                _bal = AaveLib.withdraw(lpToken, _balance);
             }
 
-            if (_name == CompoundLib.Name) {
-                _bal = CompoundLib.withdrawSome(_lpToken, _balance);
+            if (name == CompoundLib.Name) {
+                _bal = CompoundLib.withdrawSome(lpToken, _balance);
             }
         }
     }
@@ -177,7 +177,7 @@ contract StrategyLender is Ownable, IStrategy {
         }
     }
 
-    function claimComp() public {
+    function claim() public {
         address _lender = address(recommend.lender);
         string memory _lenderName = recommend.name;
         bytes32 _name = keccak256(abi.encodePacked(_lenderName));
@@ -187,15 +187,14 @@ contract StrategyLender is Ownable, IStrategy {
         }
     }
 
-    function compBalance() public view returns (uint256) {
+    function claimBalance() public view returns (uint256) {
         address _lender = address(recommend.lender);
         string memory _lenderName = recommend.name;
         bytes32 _name = keccak256(abi.encodePacked(_lenderName));
         if (_name == CompoundLib.Name) {
+            //Comp
             address _controller = IAPR(_lender).getController(false);
             return IComptroller(_controller).compAccrued(address(this));
-        } else {
-            return 0;
         }
     }
 

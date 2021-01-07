@@ -14,7 +14,6 @@ contract EarnController is Ownable, IController {
     address public vault;
     mapping(address => address) public strategies;
 
- 
     modifier onlyVault() {
         require(msg.sender == vault, "Ownable: caller is not the vault");
         _;
@@ -39,6 +38,8 @@ contract EarnController is Ownable, IController {
         }
         strategies[_token] = _strategy;
     }
+
+    receive() external payable {}
 
     function earn(address _token, uint256 _amount) public override onlyVault {
         address strategy = strategies[_token];
@@ -67,16 +68,5 @@ contract EarnController is Ownable, IController {
         onlyVault
     {
         IStrategy(strategies[_token]).withdraw(_amount);
-    }
-
-    function inCaseTokenGetsStuck(IERC20 _tokenAddress) public onlyOwner {
-        uint256 qty = _tokenAddress.balanceOf(address(this));
-        _tokenAddress.transfer(msg.sender, qty);
-    }
-
-    function inCaseETHGetsStuck() public onlyOwner {
-        uint256 bal = address(this).balance;
-        (bool result, ) = msg.sender.call{value: bal}("");
-        require(result, "transfer of ETH failed");
     }
 }

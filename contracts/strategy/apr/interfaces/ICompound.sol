@@ -11,7 +11,7 @@ interface ICToken {
 
     function totalReserves() external view returns (uint256);
 
-    function supplyRatePerBlock() external view returns (uint);
+    function supplyRatePerBlock() external view returns (uint256);
 
     function getCash() external view returns (uint256);
 
@@ -27,5 +27,5 @@ interface IComptroller {
 }
 
 interface IInterestRateModel {
-    function getSupplyRate(uint cash, uint borrows, uint reserves, uint reserveFactorMantissa) external view returns (uint);
+    function getSupplyRate(uint256 cash, uint256 borrows, uint256 reserves, uint256 reserveFactorMantissa) external view returns (uint256);
 }

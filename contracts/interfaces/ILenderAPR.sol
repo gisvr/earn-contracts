@@ -9,10 +9,7 @@ interface ILenderAPR {
         uint256 apr;
     }
 
-    function recommend(address _token) external view returns (Lender memory);
+    function recommend(address) external view returns (Lender memory);
 
-    function recommendAll(address _token)
-        external
-        view
-        returns (Lender[] memory);
+    function recommendAll(address) external view returns (Lender[] memory);
 }

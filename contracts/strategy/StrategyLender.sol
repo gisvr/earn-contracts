@@ -53,12 +53,12 @@ contract StrategyLender is Ownable, IStrategy {
         return want;
     }
 
-    function rebalance() internal {
+    function _rebalance() internal {
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
-        // want not supported strategy
-        if (recommend.apr == 0) {
-            recommend = _recommend;
-        }
+        // TODO del want token not supported strategy
+        // if (recommend.apr == 0) {
+        //     recommend = _recommend;
+        // }
 
         address _lender = address(recommend.lender);
         if (_recommend.lender != _lender) {
@@ -68,7 +68,7 @@ contract StrategyLender is Ownable, IStrategy {
     }
 
     function deposit() public payable override onlyController {
-        rebalance();
+        _rebalance();
         address _lender = address(recommend.lender);
         string memory _lenderName = recommend.name;
         uint256 _balance = msg.value;
@@ -117,7 +117,7 @@ contract StrategyLender is Ownable, IStrategy {
         if (_name == AaveLib.Name) {
             return AaveLib.balanceOf(_lpToken, address(this));
         } 
-        
+
         if (_name == CompoundLib.Name) {
             return CompoundLib.balanceOf(_lpToken, address(this));
         }

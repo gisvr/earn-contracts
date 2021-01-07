@@ -51,8 +51,8 @@ contract LenderAPR is Ownable, ILenderAPR {
         return lenders.length;
     }
 
-    function addLender(string memory _name, address _lenderApr) public onlyOwner {
-        lenders.push(Lender({name: _name, lender: _lenderApr, apr: 1}));
+    function addLender(address _lenderApr) public onlyOwner { 
+        lenders.push(Lender({name: IAPR(_lenderApr).name(), lender: _lenderApr, apr: 1}));
     }
 
     function removeLender(uint8 _index) public onlyOwner {

@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-02-06
- https://etherscan.io/address/0xeC3aDd301dcAC0e9B0B880FCf6F92BDfdc002BBc#code
-*/
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
@@ -16,8 +12,7 @@ contract AaveAPR  is Ownable,IAPR {
     address public  Aave;
     string public lenderName = "Aave";
     address  aETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-
-    // 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8 mainnet
+ 
     constructor(address _provider) public {
         Aave = _provider;
     }
@@ -63,12 +58,8 @@ contract AaveAPR  is Ownable,IAPR {
     }
 
     function getLpToken(address _token) public override view returns (address){
-        _token = getEth(_token);
-        // address aave = getAave();
-        // ILendingPool lendPool = ILendingPool(aave);
-        // (,,,,,,,,,,,address aTokenAddress,) = lendPool.getReserveData(_token);
-       return ILendingPoolCore(getAaveCore()).getReserveATokenAddress(_token);
-        // return aTokenAddress;
+        _token = getEth(_token); 
+       return ILendingPoolCore(getAaveCore()).getReserveATokenAddress(_token); 
     }
 
     function getAPR(address _token) public override view returns (uint256) {

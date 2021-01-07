@@ -50,8 +50,7 @@ contract CompoundAPR is Ownable,IAPR {
                    return _cToken; 
                }
             } 
-        }
-        // require(_lpToken != address(0),"LpToken don't exist!");
+        } 
         return _lpToken; 
     }
 

@@ -39,9 +39,13 @@ contract EarnController is Ownable, IController {
         address strategy = strategies[_token];
         address want = IStrategy(strategy).getWant();
         require(want == _token, "strategy want not equal token");
-
-        IERC20(want).safeTransfer(strategy, _amount);
-        IStrategy(strategy).deposit();
+        if(want == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE){
+            IStrategy(strategy).deposit{value: _amount}();
+        }else{
+            IERC20(want).safeTransfer(strategy, _amount);
+            IStrategy(strategy).deposit();
+        }
+        
     }
 
     function balanceOf(address _token)

@@ -1,8 +1,3 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-02-06
- https://etherscan.io/address/0xeC3aDd301dcAC0e9B0B880FCf6F92BDfdc002BBc#code
-*/
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
@@ -19,7 +14,7 @@ contract LenderAPR is Ownable, ILenderAPR {
 
     Lender[] public lenders;
 
-    function recommend(address token)
+    function recommend(address _token)
         public
         view
         override
@@ -29,7 +24,7 @@ contract LenderAPR is Ownable, ILenderAPR {
         uint256 _max = 0;
         uint256 _index = 0;
         for (uint256 i = 0; i < lenders.length; i++) {
-            uint256 _apr = IAPR(lenders[i].lender).getAPR(token);
+            uint256 _apr = IAPR(lenders[i].lender).getAPR(_token);
             if (_max < _apr) {
                 _max = _apr;
                 _index = i;
@@ -39,7 +34,7 @@ contract LenderAPR is Ownable, ILenderAPR {
         return _lenders[_index];
     }
 
-    function recommendAll(address token)
+    function recommendAll(address _token)
         public
         view
         override
@@ -47,7 +42,7 @@ contract LenderAPR is Ownable, ILenderAPR {
     {
         Lender[] memory _lenders = lenders;
         for (uint256 i = 0; i < _lenders.length; i++) {
-            _lenders[i].apr = IAPR(_lenders[i].lender).getAPR(token);
+            _lenders[i].apr = IAPR(_lenders[i].lender).getAPR(_token);
         }
         return _lenders;
     }
@@ -56,13 +51,13 @@ contract LenderAPR is Ownable, ILenderAPR {
         return lenders.length;
     }
 
-    function addLender(string memory name, address lenderApr) public onlyOwner {
-        lenders.push(Lender({name: name, lender: lenderApr, apr: 1}));
+    function addLender(string memory _name, address _lenderApr) public onlyOwner {
+        lenders.push(Lender({name: _name, lender: _lenderApr, apr: 1}));
     }
 
-    function removeLender(uint8 index) public onlyOwner {
-        if (index >= lenders.length) return;
-        lenders[index] = lenders[lenders.length - 1];
+    function removeLender(uint8 _index) public onlyOwner {
+        if (_index >= lenders.length) return;
+        lenders[_index] = lenders[lenders.length - 1];
         lenders.pop();
     }
 }

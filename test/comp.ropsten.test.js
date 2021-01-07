@@ -1,4 +1,4 @@
-let provider = require("../../utils/provider")
+let provider = require("../utils/provider")
 let compZRX = "0x00e02a5200ce3d5b5743f5369deb897946c88121" // comp ctoken
 let zrx = "0xe4c6182ea459e63b8f1be7c428381994ccc2d49c" // underlying
 let aaveDai = "0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108" //underlying

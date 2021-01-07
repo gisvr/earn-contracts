@@ -1,20 +1,14 @@
-/**
- *Submitted for verification at Etherscan.io on 2020-08-24
-*/
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
 interface IController {
-    // strategy
-    function vault() external view returns (address); 
+    function vault() external view returns (address);
 
-    // Vault
-    function withdraw(address, uint) external;
+    function withdraw(address, uint256) external;
 
     // Vault token_balance + strategy_balance
-    function balanceOf(address) external view returns (uint);
+    function balanceOf(address) external view returns (uint256);
 
-    //Vault depoist and run strategy
-    function earn(address, uint) external;
+    // Vault depoist and run strategy
+    function earn(address, uint256) external;
 }

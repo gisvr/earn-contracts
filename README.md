@@ -1,19 +1,4 @@
-## 合约地址
-gancahe 1
-```js
-// Dai
-0x7C728214be9A0049e6a86f2137ec61030D0AA964
-
-
-// mController
-0x5568CA4C8fc2ACd7D3f814A03a54A84Af9167CbC > zhl
-0xaE96738db1879c99Ebe8197Bb947EdBA4FE07d09 > liyu
-
-// vault proxy address
-0x9506b892fF641B0Cf3EaC5d5fe24AC8829CA3343 > liyu
-```
-
-
+ 
 
 ## 快速调试
 1. 先在根目录下运行 ` remixd -s ./`
@@ -62,14 +47,18 @@ node 大于  12.0版本
     //在buidler目录下执行 挂起服务 
     npx builder node --hostname 0.0.0.0 --port 8555> node.log & //31373
 
-    npm i --save ganache-cli
-
-
+    npm i --save ganache-cli 
     tail -f node.log
+
+   "scripts": {
+      "node": "npx builder node --hostname 0.0.0.0 --port 8545"
+    },
 ```
 
 PM2 ecosystem.config.js 配置
 > pm2 ecosystem
+> pm2 start npm -- run node 
+
 ```js
 {
   apps : [{
@@ -81,5 +70,24 @@ PM2 ecosystem.config.js 配置
   }]
 }
 ```
+
+.prettierrc
+```
+{
+    "overrides": [
+      {
+        "files": "*.sol",
+        "options": {
+          "printWidth": 80,
+          "tabWidth": 4,
+          "useTabs": true,
+          "singleQuote": false,
+          "bracketSpacing": true,
+          "explicitTypes": "always"
+        }
+      }
+    ]
+}
+  ``
 
 

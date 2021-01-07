@@ -145,7 +145,7 @@ contract StrategyLender is Ownable, IStrategy {
         address vaulet = IController(controller).getVault();
         uint256 bal = _redeem(_balance);
         if (want == eth) {
-            (bool result, ) = vaulet.call{value: bal}("");
+            (bool result, ) = address(vaulet).call{value: bal}("");
             require(result, "transfer of ETH failed");
         } else {
             IERC20(want).safeTransfer(vaulet, bal);

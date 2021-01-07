@@ -3,7 +3,7 @@ pragma solidity ^0.6.0;
 
 interface IStrategy {
 
-    function want() external pure returns(address);
+    function getWant() external view returns(address);
 
     function deposit() external payable;
 

@@ -6,12 +6,12 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "../interfaces/IStrategy.sol";
 import "../interfaces/IController.sol";
 
-contract mController is Ownable, IController {
+contract EarnController is Ownable, IController {
     using SafeERC20 for IERC20;
 
     address public strategist;
     address public rewards;
-    address public override vault;
+    address public vault;
     mapping(address => address) public strategies;
 
     constructor(address _vault) public {
@@ -20,6 +20,10 @@ contract mController is Ownable, IController {
 
     function setVault(address _vault) public onlyOwner {
         vault = _vault;
+    }
+
+    function getVault() public view override returns (address) {
+        return vault;
     }
 
     function setStrategy(address _token, address _strategy) public onlyOwner {
@@ -33,7 +37,7 @@ contract mController is Ownable, IController {
     function earn(address _token, uint256 _amount) public override {
         require(msg.sender == vault, "!vault");
         address strategy = strategies[_token];
-        address want = IStrategy(strategy).want();
+        address want = IStrategy(strategy).getWant();
         require(want == _token, "strategy want not equal token");
 
         IERC20(want).safeTransfer(strategy, _amount);

@@ -25,7 +25,7 @@ contract StrategyLender is Ownable, IStrategy {
 
     event Depoist(string name, address indexed lpAddres, uint256 balance);
 
-    address public override want;
+    address public want;
     address public eth = address(0);
     address public controller;
     address public apr;
@@ -46,6 +46,10 @@ contract StrategyLender is Ownable, IStrategy {
         want = _want;
     }
 
+     function getWant() external view  override returns(address) {
+         return want;
+     }
+ 
     function rebalance() internal {
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
         if (recommend.apr == 0) {
@@ -125,7 +129,7 @@ contract StrategyLender is Ownable, IStrategy {
 
     function withdraw(uint256 _balance) public override(IStrategy) {
         IERC20(want).safeTransfer(
-            IController(controller).vault(),
+            IController(controller).getVault(),
             _redeem(_balance)
         );
     }

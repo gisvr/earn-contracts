@@ -2,7 +2,7 @@
 pragma solidity ^0.6.0;
 
 interface IController {
-    function vault() external view returns (address);
+    function getVault() external view returns (address);
 
     function withdraw(address, uint256) external;
 

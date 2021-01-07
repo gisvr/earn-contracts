@@ -3,11 +3,11 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
-import "../interfaces/IControllerStrategy.sol";
+import "../interfaces/IStrategy.sol";
 import "../interfaces/IController.sol";
- 
+
 contract mController is Ownable, IController {
-    using SafeERC20 for IERC20; 
+    using SafeERC20 for IERC20;
 
     address public strategist;
     address public rewards;
@@ -25,7 +25,7 @@ contract mController is Ownable, IController {
     function setStrategy(address _token, address _strategy) public onlyOwner {
         address current = strategies[_token];
         if (current != address(0)) {
-            IControllerStrategy(current).withdrawAll();
+            IStrategy(current).withdrawAll();
         }
         strategies[_token] = _strategy;
     }
@@ -33,11 +33,11 @@ contract mController is Ownable, IController {
     function earn(address _token, uint256 _amount) public override {
         require(msg.sender == vault, "!vault");
         address strategy = strategies[_token];
-        address want = IControllerStrategy(strategy).want();
+        address want = IStrategy(strategy).want();
         require(want == _token, "strategy want not equal token");
 
         IERC20(want).safeTransfer(strategy, _amount);
-        IControllerStrategy(strategy).deposit();
+        IStrategy(strategy).deposit();
     }
 
     function balanceOf(address _token)
@@ -46,14 +46,13 @@ contract mController is Ownable, IController {
         override
         returns (uint256)
     {
-        return IControllerStrategy(strategies[_token]).balanceOf(_token);
+        return IStrategy(strategies[_token]).balanceOf(_token);
     }
 
     function withdraw(address _token, uint256 _amount) public override {
         require(msg.sender == vault, "!vault");
-        IControllerStrategy(strategies[_token]).withdraw(_amount);
+        IStrategy(strategies[_token]).withdraw(_amount);
     }
-
 
     function inCaseTokenGetsStuck(IERC20 _tokenAddress) public onlyOwner {
         uint256 qty = _tokenAddress.balanceOf(address(this));

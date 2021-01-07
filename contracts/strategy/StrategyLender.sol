@@ -25,7 +25,7 @@ contract StrategyLender is Ownable, IStrategy {
 
     event Depoist(string name, address indexed lpAddres, uint256 balance);
 
-    address public want;
+    address public override want;
     address public eth = address(0);
     address public controller;
     address public apr;

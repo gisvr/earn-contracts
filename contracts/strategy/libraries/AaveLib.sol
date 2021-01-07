@@ -45,10 +45,10 @@ library AaveLib {
         internal
         returns (uint256)
     {
-        uint256 _balAll = balanceOf(_lpToken, address(this));
-        if (_balAll > 0) {
+        uint256 balAll = balanceOf(_lpToken, address(this));
+        if (balAll > 0) {
             uint256 _bal = IAToken(_lpToken).principalBalanceOf(address(this));
-            _bal = _balAll.sub(_bal).mul(_balance).div(_bal).add(_balance);
+            _bal = balAll.sub(_bal).mul(_balance).div(_bal).add(_balance);
             require(_bal >= _balance, "principalBalanceOf error");
             IAToken(_lpToken).redeem(_bal);
             return _bal;

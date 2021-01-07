@@ -42,8 +42,6 @@ library CompoundLib {
     }
 
     function withdraw(address _lpToken, uint256 _amount) internal {
-        uint256 _bal = ICompound(_lpToken).balanceOf(msg.sender); 
-        require(_amount > _bal, "COMPOUND: witharw gt user balance");
         require(
             ICompound(_lpToken).redeem(_amount) == 0,
             "COMPOUND: redeem failed"

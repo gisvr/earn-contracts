@@ -31,6 +31,7 @@ library CompoundLib {
         view
         returns (uint256)
     {
+        // TODO compound balance check decimals
         uint256 _balance = ICompound(_lpToken).balanceOf(_account);
         if (_balance > 0) {
             // Mantisa 1e18 to decimals
@@ -52,6 +53,7 @@ library CompoundLib {
         internal
         returns (uint256)
     {
+        // TODO compound withdraw check decimals
         _amount = _amount.mul(1e18).div(
             ICompound(_lpToken).exchangeRateStored()
         );

@@ -26,7 +26,7 @@ contract StrategyLender is Ownable, IStrategy {
     event Depoist(string name, address indexed lpAddres, uint256 balance);
 
     address public want;
-    address public eth = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE; // { address(0);
+    address public eth = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE; //  address(0);
     address public controller;
     address public apr;
     ILenderAPR.Lender public recommend;
@@ -55,6 +55,7 @@ contract StrategyLender is Ownable, IStrategy {
 
     function rebalance() internal {
         ILenderAPR.Lender memory _recommend = ILenderAPR(apr).recommend(want);
+        // want not supported strategy
         if (recommend.apr == 0) {
             recommend = _recommend;
         }
@@ -115,12 +116,13 @@ contract StrategyLender is Ownable, IStrategy {
 
         if (_name == AaveLib.Name) {
             return AaveLib.balanceOf(_lpToken, address(this));
-        }
-
+        } 
+        
         if (_name == CompoundLib.Name) {
             return CompoundLib.balanceOf(_lpToken, address(this));
         }
 
+        // BUG Test Del
         return IERC20(_lpToken).balanceOf(address(this));
     }
 
@@ -140,10 +142,14 @@ contract StrategyLender is Ownable, IStrategy {
         override(IStrategy)
         onlyController
     {
-        IERC20(want).safeTransfer(
-            IController(controller).getVault(),
-            _redeem(_balance)
-        );
+        address vaulet = IController(controller).getVault();
+        uint256 bal = _redeem(_balance);
+        if (want == eth) {
+            (bool result, ) = vaulet.call{value: bal}("");
+            require(result, "transfer of ETH failed");
+        } else {
+            IERC20(want).safeTransfer(vaulet, bal);
+        }
     }
 
     function _redeem(uint256 _balance) internal returns (uint256 _bal) {

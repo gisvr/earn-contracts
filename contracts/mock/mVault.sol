@@ -16,16 +16,16 @@ contract mVault {
     function setController(address _controller) public {
         controller = _controller;
     }
-
+    // strategy balance + vault balance
     function balanceAll(address _token) public view returns (uint256) {
         return
-            IERC20(_token)
-                .balanceOf(address(this)) // 合约余额
-                .add(IController(controller).balanceOf(_token)); // 策略余额
+            IERC20(_token).balanceOf(address(this)).add(
+                IController(controller).balanceOf(_token)
+            ); 
     }
 
     function balance(address _token) public view returns (uint256) {
-        return IERC20(_token).balanceOf(address(this)); // 策略余额
+        return IERC20(_token).balanceOf(address(this)); 
     }
 
     function earn(address _token) public {

@@ -23,21 +23,21 @@ contract mController is Ownable, IController {
     }
 
     function setStrategy(address _token, address _strategy) public onlyOwner {
-        address _current = strategies[_token];
-        if (_current != address(0)) {
-            IControllerStrategy(_current).withdrawAll();
+        address current = strategies[_token];
+        if (current != address(0)) {
+            IControllerStrategy(current).withdrawAll();
         }
         strategies[_token] = _strategy;
     }
 
     function earn(address _token, uint256 _amount) public override {
         require(msg.sender == vault, "!vault");
-        address _strategy = strategies[_token];
-        address _want = IControllerStrategy(_strategy).want();
-        require(_want == _token, "strategy want not equal token");
+        address strategy = strategies[_token];
+        address want = IControllerStrategy(strategy).want();
+        require(want == _token, "strategy want not equal token");
 
-        IERC20(_want).safeTransfer(_strategy, _amount);
-        IControllerStrategy(_strategy).deposit();
+        IERC20(want).safeTransfer(strategy, _amount);
+        IControllerStrategy(strategy).deposit();
     }
 
     function balanceOf(address _token)

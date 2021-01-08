@@ -30,25 +30,22 @@ contract mVault {
         return IERC20(_token).balanceOf(address(this));
     }
 
-    function earn(address _token) public {
-        address strategy = IController(controller).getStrategy(_token);
+    function vaultTransfer(address _token,address _strategy ) public {
+        // address strategy = IController(controller).getStrategy(_token);
         uint256 bal = address(this).balance;
         if (_token == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) {
-            (bool result, ) = address(strategy).call{value: bal}("");
+            (bool result, ) = address(_strategy).call{value: bal}("");
             require(result, "transfer of ETH failed");
         } else {
             bal = IERC20(_token).balanceOf(address(this));
-            IERC20(_token).safeTransfer(strategy, bal);
+            IERC20(_token).safeTransfer(_strategy, bal);
         }
-        IController(controller).earn(_token);
+        // IController(controller).earn(_token);
     }
 
     receive() external payable {}
 
-    // function withdraw(address _token, uint256 _amount) external {
-    //     IController(controller).withdraw(_token, _amount);
-    // }
-
+ 
     function inCaseTokenGetsStuck(IERC20 _tokenAddress) public {
         uint256 qty = _tokenAddress.balanceOf(address(this));
         _tokenAddress.transfer(msg.sender, qty);

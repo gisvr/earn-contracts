@@ -82,10 +82,13 @@ describe('mVault ETH DAI ganache', async () => {
         let mBal1 = await await web3.eth.getBalance(mAddr)
         expect(mBal1).to.be.bignumber.eq(amount,"ETH 合约充值余额");
 
-        await this.mVault.earn(ethAddr)
+        let tx=  await this.mController.earn(ethAddr)
+        // await this.mVault.vaultTransfer(ethAddr,sender);
+        
         let mBal2 =  await web3.eth.getBalance(mAddr)
 
         
+
         expect(mBal2).to.be.bignumber.eq(new BN(0),"ETH 合约earn余额")
  
     }).timeout(50000)
@@ -113,7 +116,9 @@ describe('mVault ETH DAI ganache', async () => {
         let mBal1 = await reserve.balanceOf(mAddr)
         expect(mBal1).to.be.bignumber.eq(amount,"DAI 合约充值余额");
 
-        await this.mVault.earn(reserveAddr)
+        await this.mController.earn(reserveAddr)
+ 
+
         let mBal2 = await reserve.balanceOf(mAddr)
         expect(mBal2).to.be.bignumber.eq(new BN(0),"DAI 合约earn余额")
  

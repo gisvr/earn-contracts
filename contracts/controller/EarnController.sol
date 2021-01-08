@@ -33,6 +33,10 @@ contract EarnController is Ownable, IController {
         vault = _vault;
     }
 
+    function setLendingPoolController(address _lendingPoolController) public onlyOwner {
+        lendingPoolController = _lendingPoolController;
+    }
+
     function getVault() public view override returns (address) {
         return vault;
     }

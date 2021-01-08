@@ -18,13 +18,13 @@ Starting migrations...
 
    Replacing 'Migrations'
    ----------------------
-   > transaction hash:    0x5e77df8570e602dddad6664ec49e8e984f4e863f2cbea45e251b341ab086eebf
+   > transaction hash:    0x3f8db2411cfd7d54ac82ff06c11dbaa043aa5c0a0577ad97b83ee1c740977714
    > Blocks: 0            Seconds: 0
-   > contract address:    0x58bc0AaC9359fBdc66aD0B07bdE74E5ACc37cF43
-   > block number:        4760
-   > block timestamp:     1609919714
+   > contract address:    0x368835953294A2B2d2d0794486ab5D950Cb50fcA
+   > block number:        6472
+   > block timestamp:     1610112490
    > account:             0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0
-   > balance:             10018.084882916148937893
+   > balance:             10019.405821809058090395
    > gas used:            239500 (0x3a78c)
    > gas price:           20 gwei
    > value sent:          0 ETH
@@ -42,24 +42,24 @@ Starting migrations...
 
    Replacing 'AaveAPR'
    -------------------
-   > transaction hash:    0xe4f860b54763caf5002d973b660c81675b13ec7e3ead07797d77fbb07450b54e
+   > transaction hash:    0x27957ea881aaa21d10f1b78f9ea3845ad4d90c34aa185f843b8e416e9973b59b
    > Blocks: 0            Seconds: 0
-   > contract address:    0x0498DA021B60ce8466f7345F6362104befe2DEc4
-   > block number:        4762
-   > block timestamp:     1609919714
+   > contract address:    0x49b8AadB90268b6eF7aC0a033d8ca6557519EB6C
+   > block number:        6474
+   > block timestamp:     1610112490
    > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
-   > balance:             9956.4160955212
-   > gas used:            909143 (0xddf57)
+   > balance:             9916.127211721792872649
+   > gas used:            840638 (0xcd3be)
    > gas price:           20 gwei
    > value sent:          0 ETH
-   > total cost:          0.01818286 ETH
+   > total cost:          0.01681276 ETH
 
-AaveAPR aaveDai 452762755297641, aaveEth 13897836647916057
+AaveAPR aaveDai 452746428202010, aaveEth 0
 
    > Saving migration to chain.
    > Saving artifacts
    -------------------------------------
-   > Total cost:          0.01818286 ETH
+   > Total cost:          0.01681276 ETH
 
 
 4_lender_apr.js
@@ -67,31 +67,154 @@ AaveAPR aaveDai 452762755297641, aaveEth 13897836647916057
 
    Replacing 'LenderAPR'
    ---------------------
-   > transaction hash:    0x4ca172a139e7da174496dee945130e84da584538eb275df1deeb33964b8fe008
+   > transaction hash:    0xc23a2dced37da8e253d7725f950bde84c1a8a0d8f6e80fc5e6d4cd363825ec52
    > Blocks: 0            Seconds: 0
-   > contract address:    0x9CF02fe412cF813c8fE55c17B39B43626250D295
-   > block number:        4764
-   > block timestamp:     1609919716
+   > contract address:    0x4DC1ABd5181C0256E57cB7215b73781C5D10D224
+   > block number:        6476
+   > block timestamp:     1610112492
    > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
-   > balance:             9956.3984459212
-   > gas used:            860223 (0xd203f)
+   > balance:             9916.109235461792872649
+   > gas used:            876556 (0xd600c)
    > gas price:           20 gwei
    > value sent:          0 ETH
-   > total cost:          0.01720446 ETH
+   > total cost:          0.01753112 ETH
 
-lenderAPR 0x0498DA021B60ce8466f7345F6362104befe2DEc4
+lenderAPR 0x49b8AadB90268b6eF7aC0a033d8ca6557519EB6C
 lenderAPR Aave
-lenderAPR 452762755297641
+lenderAPR 452746428202010
 
    > Saving migration to chain.
    > Saving artifacts
    -------------------------------------
-   > Total cost:          0.01720446 ETH
+   > Total cost:          0.01753112 ETH
+
+
+5_vault_controller.js
+=====================
+
+   Replacing 'EarnController'
+   --------------------------
+   > transaction hash:    0x631aefa0d7480a6adc4f579c1f85158b46ebdcb850619f36583bb154a8b7d825
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x168CBff25Ad4B8cA54408FC89048338437E5bfdd
+   > block number:        6479
+   > block timestamp:     1610112493
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9916.091897701792872649
+   > gas used:            734435 (0xb34e3)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0146887 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:           0.0146887 ETH
+
+
+6_lender_strategy.js
+====================
+
+   Replacing 'StrategyLender'
+   --------------------------
+   > transaction hash:    0x3da26f8d923fe1289462f3e6fd36526765fd767bb41c63038d6f0abf239f3c97
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xa53BD03d2f45820a2C1756F86fa08080f32861Be
+   > block number:        6481
+   > block timestamp:     1610112494
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9916.044311341792872649
+   > gas used:            2357061 (0x23f745)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04714122 ETH
+
+
+   Replacing 'StrategyLender'
+   --------------------------
+   > transaction hash:    0xceabd134e50ab82a6bcf55124d10ca3151d7197312faf46871ce592bde5bde0f
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x6D1f002b19b5d46BBE49775fA600d6caAd9E1EfB
+   > block number:        6483
+   > block timestamp:     1610112494
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9915.996274521792872649
+   > gas used:            2357061 (0x23f745)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04714122 ETH
+
+
+   Replacing 'StrategyLender'
+   --------------------------
+   > transaction hash:    0x33281cdaf1b4f6c026f606973e9ab10800a7b3cb5cef47672627c06345efb7aa
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x9e392d5260eed43D0Ab10A0591c1d0d84b960F6D
+   > block number:        6485
+   > block timestamp:     1610112495
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9915.948238181792872649
+   > gas used:            2357061 (0x23f745)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04714122 ETH
+
+
+   Replacing 'StrategyLender'
+   --------------------------
+   > transaction hash:    0x1d458aa4fb3e5e5954365d88aeb30d11906288d91e42b13bb03e143fb4ca9f1a
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x963Bdfd5295B531bFeE6fFB9B5b3126795d0E19f
+   > block number:        6487
+   > block timestamp:     1610112495
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9915.900201361792872649
+   > gas used:            2357061 (0x23f745)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04714122 ETH
+
+
+   Replacing 'StrategyLender'
+   --------------------------
+   > transaction hash:    0x62c5bab8f36f020418f500276dfc29a3f58d25b2254e8fcc8696d54c79a00d84
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xdF97d5806A382F521655609A656A9718f88F0D89
+   > block number:        6489
+   > block timestamp:     1610112496
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9915.852164541792872649
+   > gas used:            2357061 (0x23f745)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04714122 ETH
+
+
+   Replacing 'StrategyLender'
+   --------------------------
+   > transaction hash:    0xc929dc1486367cc64237dad5ab06b040a4f535521b63d5ca96eefb730711b944
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x42963C0314E3f86ef862f3E1f7E59a2466FEA684
+   > block number:        6491
+   > block timestamp:     1610112496
+   > account:             0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+   > balance:             9915.804127721792872649
+   > gas used:            2357061 (0x23f745)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.04714122 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.28284732 ETH
 
 
 Summary
 =======
-> Total deployments:   3
-> Final cost:          0.04017732 ETH
+> Total deployments:   10
+> Final cost:          0.3366699 ETH
 
 

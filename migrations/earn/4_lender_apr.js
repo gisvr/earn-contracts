@@ -13,7 +13,7 @@ module.exports = async (deployer, network, accounts) => {
     let aaveAPR = await AaveAPR.deployed();  //
     let lenderAPR = await LenderAPR.deployed(); //  
 
-    await lenderAPR.addLender("Aave", aaveAPR.address);
+    await lenderAPR.addLender(aaveAPR.address);
 
     let _dai = await nodeProvider.getAave("MockDAI");
     let aaveDai = _dai.address;

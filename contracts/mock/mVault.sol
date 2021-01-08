@@ -39,8 +39,7 @@ contract mVault {
         } else {
             bal = IERC20(_token).balanceOf(address(this));
             IERC20(_token).safeTransfer(_strategy, bal);
-        }
-        // IController(controller).earn(_token);
+        } 
     }
 
     receive() external payable {}

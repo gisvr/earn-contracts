@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "../interfaces/IController.sol";
 
-contract mCountroller {
+contract mController {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     address public controller;

@@ -13,7 +13,7 @@ contract mVault {
     using SafeMath for uint256;
     address public controller;
 
-    function setController(address _controller) public {
+    function setEarnController(address _controller) public {
         controller = _controller;
     }
 
@@ -45,9 +45,9 @@ contract mVault {
 
     receive() external payable {}
 
-    function withdraw(address _token, uint256 _amount) external {
-        IController(controller).withdraw(_token, _amount);
-    }
+    // function withdraw(address _token, uint256 _amount) external {
+    //     IController(controller).withdraw(_token, _amount);
+    // }
 
     function inCaseTokenGetsStuck(IERC20 _tokenAddress) public {
         uint256 qty = _tokenAddress.balanceOf(address(this));

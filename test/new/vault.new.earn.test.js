@@ -33,15 +33,19 @@ describe('mVault ETH DAI ganache', async () => {
         await this.LenderAPR.addLender(this.AaveAPR.address)
 
         // mVault
+        let _mController = await nodeProvider.getEarn("mController");
+        this.mController = await _mController.new();
+
         let _mVault = await nodeProvider.getEarn("mVault");
         this.mVault = await _mVault.new();
 
 
         // EarnController
         let _earnController = await nodeProvider.getEarn("EarnController");
-        this.EarnController = await _earnController.new(this.mVault.address);
+        this.EarnController = await _earnController.new(this.mVault.address,this.mController.address);
 
-        await this.mVault.setController(this.EarnController.address);
+        await this.mVault.setEarnController(this.EarnController.address);
+        await this.mController.setEarnController(this.EarnController.address);
 
         // StrategyLender
         let _strategyLender = await nodeProvider.getEarn("StrategyLender");
@@ -88,7 +92,7 @@ describe('mVault ETH DAI ganache', async () => {
         let mAddr = this.mVault.address 
         let bal =  await this.mVault.balanceAll(ethAddr)
  
-        await this.mVault.withdraw(ethAddr,bal) 
+        await this.mController.withdraw(ethAddr,bal) 
         let mBal3 = await web3.eth.getBalance(mAddr)
         await this.mVault.inCaseETHGetsStuck()  
         // expect(mBal3).to.be.bignumber.eq(bal,"ETH 合约withdraw余额");
@@ -118,7 +122,7 @@ describe('mVault ETH DAI ganache', async () => {
         let reserveAddr = reserve.address;
         let mAddr = this.mVault.address 
         let bal =  await this.mVault.balanceAll(reserveAddr)
-        await this.mVault.withdraw(reserveAddr,bal) 
+        await this.mController.withdraw(reserveAddr,bal) 
         let mBal3 = await reserve.balanceOf(mAddr) 
         await this.mVault.inCaseTokenGetsStuck(reserveAddr)  
         // expect(mBal3).to.be.bignumber.eq(bal,"DAI 合约withdraw余额"); 

@@ -17,13 +17,13 @@ contract mCountroller {
         controller = _controller;
     }
 
-    function earn(address _token) public {
-        address vault = IController(controller).getVault();
-        address strategy = IController(controller).getStrategy(_token);
-        uint256 bal = IERC20(_token).balanceOf(address(this));
-        IERC20(_token).safeTransferFrom(vault, strategy, bal);
-        // IController(controller).earn(_token, bal);
-    }
+    // function earn(address _token) public {
+    //     address vault = IController(controller).getVault();
+    //     address strategy = IController(controller).getStrategy(_token);
+    //     uint256 bal = IERC20(_token).balanceOf(address(this));
+    //     IERC20(_token).safeTransferFrom(vault, strategy, bal);
+    //     // IController(controller).earn(_token, bal);
+    // }
 
     function withdraw(address _token, uint256 _amount) external {
         IController(controller).withdraw(_token, _amount);

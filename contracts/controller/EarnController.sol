@@ -60,16 +60,11 @@ contract EarnController is Ownable, IController {
         return strategies[_token];
     }
 
-    // TODO Del
-    function earn(address _token)
-        public
-        override
-        onlyLendingPoolController
-    {
+    function earn(address _token) public override onlyVault {
         address strategy = strategies[_token];
         address want = IStrategy(strategy).getWant();
-        require(want == _token, "strategy want not equal token"); 
-        IStrategy(strategy).deposit(); 
+        require(want == _token, "strategy want not equal token");
+        IStrategy(strategy).deposit();
     }
 
     function balanceOf(address _token)

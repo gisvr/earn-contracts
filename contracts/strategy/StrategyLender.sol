@@ -121,9 +121,6 @@ contract StrategyLender is Ownable, IStrategy {
         if (_name == CompoundLib.Name) {
             return CompoundLib.balanceOf(_lpToken, address(this));
         }
-
-        // BUG Test Del
-        return IERC20(_lpToken).balanceOf(address(this));
     }
 
     function withdrawAll()
@@ -142,13 +139,13 @@ contract StrategyLender is Ownable, IStrategy {
         override(IStrategy)
         onlyController
     {
-        address vaulet = IController(controller).getVault();
+        address vault = IController(controller).getVault();
         uint256 bal = _redeem(_balance);
         if (want == eth) {
-            (bool result, ) = address(vaulet).call{value: bal}("");
+            (bool result, ) = address(vault).call{value: bal}("");
             require(result, "transfer of ETH failed");
         } else {
-            IERC20(want).safeTransfer(vaulet, bal);
+            IERC20(want).safeTransfer(vault, bal);
         }
     }
 

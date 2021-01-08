@@ -74,8 +74,7 @@ describe('mVault ganache', async () => {
         let mAddr = this.StrategyLenderDAI.address
 
         await reserve.approve(mAddr, amount)
-        let balance1 = await reserve.balanceOf(sender);
-        console.log("sender balance", balance1.toString())
+        let balance1 = await reserve.balanceOf(sender); 
         await reserve.transfer(mAddr, amount);
         let mBal1 = await reserve.balanceOf(mAddr)
         expect(mBal1).to.be.bignumber.eq(amount,"合约充值余额");

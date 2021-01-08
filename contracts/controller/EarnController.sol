@@ -9,8 +9,7 @@ import "../interfaces/IController.sol";
 contract EarnController is Ownable, IController {
     using SafeERC20 for IERC20;
 
-    address public strategist;
-    address public rewards;
+    address public strategist; 
     address public vault;
     address public lendingPoolController;
     mapping(address => address) public strategies;
@@ -18,7 +17,7 @@ contract EarnController is Ownable, IController {
     modifier onlyLendingPoolController() {
         require(
             msg.sender == lendingPoolController,
-            "Ownable: caller is not the vault"
+            "Ownable: caller is not the LendingPoolController"
         );
         _;
     }

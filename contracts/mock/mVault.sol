@@ -31,15 +31,16 @@ contract mVault {
     }
 
     function earn(address _token) public {
+        address strategy = IController(controller).getStrategy(_token);
         uint256 bal = address(this).balance;
         if (_token == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) {
-            (bool result, ) = address(controller).call{value: bal}("");
+            (bool result, ) = address(strategy).call{value: bal}("");
             require(result, "transfer of ETH failed");
         } else {
             bal = IERC20(_token).balanceOf(address(this));
-            IERC20(_token).safeTransfer(controller, bal);
+            IERC20(_token).safeTransfer(strategy, bal);
         }
-        IController(controller).earn(_token, bal);
+        IController(controller).earn(_token);
     }
 
     receive() external payable {}

@@ -12,5 +12,5 @@ interface IController {
     function balanceOf(address) external view returns (uint256);
 
     // Vault depoist and run strategy
-    function earn(address, uint256) external;
+    function earn(address) external;
 }

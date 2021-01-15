@@ -26,8 +26,7 @@ contract EarnController is Ownable, IController {
         vault = _vault;
         lendingPoolController = _lendingPoolController;
     }
-
-    receive() external payable {}
+ 
 
     function setVault(address _vault) public onlyOwner {
         vault = _vault;
@@ -42,9 +41,10 @@ contract EarnController is Ownable, IController {
     }
 
     function setStrategy(address _token, address _strategy) public onlyOwner {
-        address current = strategies[_token];
-        if (current != address(0)) {
-            IStrategy(current).withdrawAll();
+        address current = strategies[_token]; 
+        if (current != address(0)) { 
+            require(IStrategy(current).balanceOf()>100);
+            //TODO IStrategy(current).withdrawAll();
         }
         strategies[_token] = _strategy;
     }
@@ -58,11 +58,11 @@ contract EarnController is Ownable, IController {
         return strategies[_token];
     }
 
-    function earn(address _token) public override onlyLendingPoolController {
+    function earn(address _token,uint256 amount) public override onlyLendingPoolController returns (uint256){
         address strategy = strategies[_token];
         address want = IStrategy(strategy).getWant();
         require(want == _token, "strategy want not equal token");
-        IStrategy(strategy).deposit();
+        return IStrategy(strategy).deposit(amount);
     }
 
     function balanceOf(address _token)
@@ -71,7 +71,7 @@ contract EarnController is Ownable, IController {
         override
         returns (uint256)
     {
-        return IStrategy(strategies[_token]).balanceOf(_token);
+        return IStrategy(strategies[_token]).balanceOf();
     }
 
     function withdraw(address _token, uint256 _amount)

@@ -19,7 +19,7 @@ describe('mVault ETH DAI ganache', async () => {
         let _aaveProvider = await nodeProvider.getAave("LendingPoolAddressesProvider");
 
         [sender, alice, bob] = nodeProvider.getAccounts()
-        web3 = nodeProvider.getWeb3()
+        web3 = nodePr ovider.getWeb3()
         // BN = web3.utils.BN 
 
         //创建一个依赖测试节点的 arp

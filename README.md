@@ -50,25 +50,31 @@ node 大于  12.0版本
     npm i --save ganache-cli 
     tail -f node.log
 
-   "scripts": {
-      "node": "npx builder node --hostname 0.0.0.0 --port 8545"
-    },
 ```
 
 PM2 ecosystem.config.js 配置
 > pm2 ecosystem
-> pm2 start npm -- run node 
 
 ```js
-{
+module.exports = {
   apps : [{
     name: "ganache",
-    script: "/usr/local/node/bin/ganache-cli",
-    error_file:"./logs/app-err.log",
-    out_file: "./logs/app-out.log", 
-    args:"-h 0.0.0.0 -p 8555  --deterministic --gasPrice 5e9 --gasLimit 20000000 -e 10000 --networkId 1338 --db ./ganache"
-  }]
-}
+    script: "/usr/local/bin/ganache-cli",
+    error_file:"./logs/ganache-err.log",
+    out_file: "./logs/ganache-out.log", 
+    args:"-h 0.0.0.0 -p 8545 --deterministic -a 20\
+    --gasPrice 90e9 --gasLimit 2000e4  -n true\
+    -m 'myth like bonus scare over problem client lizard pioneer submit female collect' \
+    -e 20000 --chainId 8545 --networkId 8545 --db ./ganache"
+  }],
+};
+
+```
+> pm2 start npm -- run node 
+```
+   "scripts": {
+      "node": "npx builder node --hostname 0.0.0.0 --port 8545"
+    },
 ```
 
 .prettierrc
